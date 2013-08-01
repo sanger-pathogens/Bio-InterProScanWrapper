@@ -5,8 +5,9 @@ processes them with individual instances of iprscan and then sticks it all back 
 It can run in parallelised mode on a single host or over LSF.
 
 Features:
+Annotates using InterProScan 5.
 Intermediate files cleaned up as soon as they are finished with,
-It creates a GFF3 file that can be opened in Artemis (input proteins appended to the end of the annotation.
+It creates a GFF3 file with the input sequences at the end.
 
 Dependancies:
 A working version of IPRscan 5
