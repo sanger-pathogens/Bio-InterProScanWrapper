@@ -16,16 +16,16 @@ use Bio::InterProScanWrapper;
 has 'args'        => ( is => 'ro', isa => 'ArrayRef', required => 1 );
 has 'script_name' => ( is => 'ro', isa => 'Str',      required => 1 );
 has 'help'        => ( is => 'rw', isa => 'Bool',     default  => 0 );
-has 'cpus'        => ( is => 'rw', isa => 'Int',      default  => 1 );
+has 'cpus'        => ( is => 'rw', isa => 'Int',      default  => 100 );
 has 'exec_script' => ( is => 'rw', isa => 'Str',      default  => 'interproscan.sh' );
 has 'proteins_file'   => ( is => 'rw', isa => 'Str' );
 has 'tmp_directory'   => ( is => 'rw', isa => 'Str', default => '/tmp' );
 has 'output_filename' => ( is => 'rw', isa => 'Str', default => 'iprscan_results.gff' );
-has 'use_lsf'         => ( is => 'rw', isa => 'Bool', default => 0 );
+has 'no_lsf'         => ( is => 'rw', isa => 'Bool', default => 0 );
 
 sub BUILD {
     my ($self) = @_;
-    my ( $proteins_file, $tmp_directory, $help, $exec_script, $cpus, $output_filename, $use_lsf );
+    my ( $proteins_file, $tmp_directory, $help, $exec_script, $cpus, $output_filename, $no_lsf );
 
     GetOptionsFromArray(
         $self->args,
@@ -46,7 +46,7 @@ sub BUILD {
     $self->exec_script($exec_script)         if ( defined($exec_script) );
     $self->cpus($cpus)                       if ( defined($cpus) );
     $self->output_filename($output_filename) if ( defined($output_filename) );
-    $self->use_lsf(1)                        if ( defined($use_lsf) );
+    $self->no_lsf(1)                         if (  defined($no_lsf) );
 
 }
 
@@ -60,7 +60,7 @@ sub run {
         cpus            => $self->cpus,
         exec            => $self->exec_script,
         output_filename => $self->output_filename,
-        use_lsf         => $self->use_lsf
+        use_lsf         => ($self->no_lsf == 1 ? 0 : 1)
     );
     $obj->annotate;
 
