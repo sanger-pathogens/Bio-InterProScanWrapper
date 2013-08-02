@@ -34,7 +34,7 @@ sub BUILD {
         'e|exec_script=s'     => \$exec_script,
         'p|cpus=s'            => \$cpus,
         'o|output_filename=s' => \$output_filename,
-        'l|use_lsf'           => \$use_lsf,
+        'l|no_lsf'            => \$no_lsf,
         'h|help'              => \$help,
     );
 
@@ -72,15 +72,19 @@ sub usage_text {
 
     return <<USAGE;
     Usage: $script_name [options]
-    Annotate eukaryotes
+    Annotate eukaryotes using InterProScan
   
+    # Run InterProScan using LSF
     $script_name -a proteins.faa
     
-    # Run on a single host with 10 instances - it needs 20 CPUs and 20GB of RAM to be reserved
-    $script_name -a proteins.faa -p 10
+    # Provide an output file name 
+    $script_name -a proteins.faa -o output.gff
     
-    # Split up over multiple hosts using LSF where '-p' is the max number of jobs at any given time
-    $script_name -a proteins.faa --use_lsf -p 10
+    # Create 200 jobs at a time, writing out intermediate results to a file
+    $script_name -a proteins.faa -p 200
+    
+    # Run on a single host (no LSF). '-p x' needs x*2 CPUs and x*2GB of RAM to be available
+    $script_name -a proteins.faa --no_lsf -p 10 
 
     # This help message
     annotate_eukaryotes -h
