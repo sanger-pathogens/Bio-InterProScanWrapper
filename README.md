@@ -4,27 +4,32 @@ This is a wrapper around InterProScan. It takes in a FASTA file of proteins, spl
 processes them with individual instances of iprscan and then sticks it all back together again.
 It can run in parallelised mode on a single host or over LSF.
 
-Features:
+Features
+========
 Annotates using InterProScan 5.
 Intermediate files cleaned up as soon as they are finished with,
 It creates a GFF3 file with the input sequences at the end.
 
-Dependancies:
+Dependancies
+============
 A working version of IPRscan 5
 
+Usage
+=====
 
-
-
-    Annotate eukaryotes
+  # Run InterProScan using LSF
+  $script_name -a proteins.faa
   
-    $script_name -a proteins.faa
-    
-    # Run on a single host with 10 instances - it needs 20 CPUs and 20GB of RAM to be reserved
-    $script_name -a proteins.faa -p 10
-    
-    # Split up over multiple hosts using LSF where '-p' is the max number of jobs at any given time
-    $script_name -a proteins.faa --use_lsf -p 10
+  # Provide an output file name 
+  $script_name -a proteins.faa -o output.gff
+  
+  # Create 200 jobs at a time, writing out intermediate results to a file
+  $script_name -a proteins.faa -p 200
+  
+  # Run on a single host (no LSF). '-p x' needs x*2 CPUs and x*2GB of RAM to be available
+  $script_name -a proteins.faa --no_lsf -p 10 
 
-    # This help message
-    annotate_eukaryotes -h
+  # This help message
+  annotate_eukaryotes -h
+
 
