@@ -9,9 +9,9 @@ with 'TestHelper';
 
 BEGIN {
     use Test::Most;
-    use_ok('Bio::AutomatedAnnotation::CommandLine::AnnotateEukaryotes');
+    use_ok('Bio::InterProScanWrapper::CommandLine::AnnotateEukaryotes');
 }
-my $script_name = 'Bio::AutomatedAnnotation::CommandLine::AnnotateEukaryotes';
+my $script_name = 'Bio::InterProScanWrapper::CommandLine::AnnotateEukaryotes';
 my $cwd = getcwd();
 
 my %scripts_and_expected_files = (
