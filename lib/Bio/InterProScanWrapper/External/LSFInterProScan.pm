@@ -21,7 +21,7 @@ use LSF::JobManager;
 use Bio::InterProScanWrapper::Exceptions;
 
 has 'input_files'     => ( is => 'ro', isa => 'ArrayRef',        required => 1 );
-has 'memory_in_mb'    => ( is => 'ro', isa => 'Int',             default  => 2500 );
+has 'memory_in_mb'    => ( is => 'ro', isa => 'Int',             default  => 2300 );
 has 'queue'           => ( is => 'ro', isa => 'Str',             default  => 'normal' );
 has '_job_manager'    => ( is => 'ro', isa => 'LSF::JobManager', lazy     => 1, builder => '_build__job_manager' );
 
@@ -65,7 +65,7 @@ sub _report_errors {
     }
 
     if ( scalar @errors != 0 ) {
-        Bio::InterProScanWrapper::InterProScanWrapper::LSFJobFailed->throw( error => "The following jobs failed: ", join( ",", @errors ) );
+        Bio::InterProScanWrapper::Exceptions::LSFJobFailed->throw( error => "The following jobs failed: ", join( ",", @errors ) );
     }
     $self->_job_manager->clear;
 }
