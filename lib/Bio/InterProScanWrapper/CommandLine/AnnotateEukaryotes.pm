@@ -17,7 +17,7 @@ has 'args'        => ( is => 'ro', isa => 'ArrayRef', required => 1 );
 has 'script_name' => ( is => 'ro', isa => 'Str',      required => 1 );
 has 'help'        => ( is => 'rw', isa => 'Bool',     default  => 0 );
 has 'cpus'        => ( is => 'rw', isa => 'Int',      default  => 100 );
-has 'exec_script' => ( is => 'rw', isa => 'Str',      default  => '/software/pathogen/external/apps/usr/local/iprscan-5.0.6/interproscan.sh' );
+has 'exec_script' => ( is => 'rw', isa => 'Str',      default  => '/software/pathogen/external/apps/usr/local/iprscan-5.0.7/interproscan.sh' );
 has 'proteins_file'   => ( is => 'rw', isa => 'Str' );
 has 'tmp_directory'   => ( is => 'rw', isa => 'Str', default => '/tmp' );
 has 'output_filename' => ( is => 'rw', isa => 'Str', default => 'iprscan_results.gff' );
