@@ -25,7 +25,7 @@ has 'memory_in_mb'    => ( is => 'ro', isa => 'Int',             default  => 230
 has 'queue'           => ( is => 'ro', isa => 'Str',             default  => 'normal' );
 has '_job_manager'    => ( is => 'ro', isa => 'LSF::JobManager', lazy     => 1, builder => '_build__job_manager' );
 
-has 'exec'             => ( is => 'ro', isa => 'Str', default  => '/software/pathogen/external/apps/usr/local/iprscan-5.0.6/interproscan.sh' );
+has 'exec'             => ( is => 'ro', isa => 'Str', default  => '/software/pathogen/external/apps/usr/local/iprscan-5.0.7/interproscan.sh' );
 has 'output_type'      => ( is => 'ro', isa => 'Str', default => 'gff3' );
 has '_output_suffix'   => ( is => 'ro', isa => 'Str', default  => '.out' );
 
