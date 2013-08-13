@@ -21,7 +21,7 @@ use LSF::JobManager;
 use Bio::InterProScanWrapper::Exceptions;
 
 has 'input_files'     => ( is => 'ro', isa => 'ArrayRef',        required => 1 );
-has 'memory_in_mb'    => ( is => 'ro', isa => 'Int',             default  => 2300 );
+has 'memory_in_mb'    => ( is => 'ro', isa => 'Int',             default  => 3000 );
 has 'queue'           => ( is => 'ro', isa => 'Str',             default  => 'normal' );
 has '_job_manager'    => ( is => 'ro', isa => 'LSF::JobManager', lazy     => 1, builder => '_build__job_manager' );
 
