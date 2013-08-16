@@ -30,7 +30,7 @@ has 'output_type'      => ( is => 'ro', isa => 'Str', default => 'gff3' );
 has '_output_suffix'   => ( is => 'ro', isa => 'Str', default  => '.out' );
 
 # A single instance uses more than 1 cpu so you need to reserve more slots
-has '_cpus_per_command'  => ( is => 'ro', isa => 'Int',  default  => 2 );
+has '_cpus_per_command'  => ( is => 'ro', isa => 'Int',  default  => 4 );
 
 sub _build__job_manager {
     my ($self) = @_;
