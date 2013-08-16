@@ -75,7 +75,7 @@ sub _create_protein_file {
     my $output_filename = $self->_temp_directory_name . '/' . $counter . $self->_protein_file_suffix;
     my $fout         = Bio::SeqIO->new( -file => ">>" . $output_filename, -format => 'Fasta', -alphabet => 'protein' );
     my $raw_sequence = $seq_io_protein->seq;
-    $raw_sequence =~ s/\*//;
+    $raw_sequence =~ s/\*//g;
     $seq_io_protein->seq($raw_sequence);
     $fout->write_seq($seq_io_protein);
     return $output_filename;
