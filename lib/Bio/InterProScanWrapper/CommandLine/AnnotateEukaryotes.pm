@@ -74,17 +74,17 @@ sub usage_text {
     Usage: $script_name [options]
     Annotate eukaryotes using InterProScan
   
-    # Run InterProScan using LSF
-    $script_name -a proteins.faa
+    # Run InterProScan using LSF and screen (recommended)
+    screen $script_name -a proteins.faa
     
     # Provide an output file name 
-    $script_name -a proteins.faa -o output.gff
+    screen $script_name -a proteins.faa -o output.gff
     
     # Create 200 jobs at a time, writing out intermediate results to a file
-    $script_name -a proteins.faa -p 200
+    screen $script_name -a proteins.faa -p 200
     
     # Run on a single host (no LSF). '-p x' needs x*2 CPUs and x*2GB of RAM to be available
-    $script_name -a proteins.faa --no_lsf -p 10 
+    screen $script_name -a proteins.faa --no_lsf -p 10 
 
     # This help message
     annotate_eukaryotes -h
