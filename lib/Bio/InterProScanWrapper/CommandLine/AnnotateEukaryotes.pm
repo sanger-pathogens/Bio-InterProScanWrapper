@@ -13,19 +13,20 @@ use Getopt::Long qw(GetOptionsFromArray);
 use Cwd;
 use Bio::InterProScanWrapper;
 
-has 'args'        => ( is => 'ro', isa => 'ArrayRef', required => 1 );
-has 'script_name' => ( is => 'ro', isa => 'Str',      required => 1 );
-has 'help'        => ( is => 'rw', isa => 'Bool',     default  => 0 );
-has 'cpus'        => ( is => 'rw', isa => 'Int',      default  => 100 );
-has 'exec_script' => ( is => 'rw', isa => 'Str',      default  => '/software/pathogen/external/apps/usr/local/iprscan-5.0.7/interproscan.sh' );
-has 'proteins_file'   => ( is => 'rw', isa => 'Str' );
-has 'tmp_directory'   => ( is => 'rw', isa => 'Str', default => '/tmp' );
-has 'output_filename' => ( is => 'rw', isa => 'Str', default => 'iprscan_results.gff' );
-has 'no_lsf'         => ( is => 'rw', isa => 'Bool', default => 0 );
+has 'args'                    => ( is => 'ro', isa => 'ArrayRef', required => 1 );
+has 'script_name'             => ( is => 'ro', isa => 'Str',      required => 1 );
+has 'help'                    => ( is => 'rw', isa => 'Bool',     default  => 0 );
+has 'cpus'                    => ( is => 'rw', isa => 'Int',      default  => 100 );
+has 'exec_script'             => ( is => 'rw', isa => 'Str',      default  => '/software/pathogen/external/apps/usr/local/iprscan-5.0.7/interproscan.sh' );
+has 'proteins_file'           => ( is => 'rw', isa => 'Str' );
+has 'tmp_directory'           => ( is => 'rw', isa => 'Str', default => '/tmp' );
+has 'output_filename'         => ( is => 'rw', isa => 'Str', default => 'iprscan_results.gff' );
+has 'no_lsf'                  => ( is => 'rw', isa => 'Bool', default => 0 );
+has 'intermediate_output_dir' => ( is => 'rw', isa => 'Maybe[Str]');
 
 sub BUILD {
     my ($self) = @_;
-    my ( $proteins_file, $tmp_directory, $help, $exec_script, $cpus, $output_filename, $no_lsf );
+    my ( $proteins_file, $tmp_directory, $help, $exec_script, $cpus, $output_filename, $no_lsf,$intermediate_output_dir );
 
     GetOptionsFromArray(
         $self->args,
@@ -35,6 +36,7 @@ sub BUILD {
         'p|cpus=s'            => \$cpus,
         'o|output_filename=s' => \$output_filename,
         'l|no_lsf'            => \$no_lsf,
+        'intermediate_output_dir=s' => \$intermediate_output_dir,
         'h|help'              => \$help,
     );
 
@@ -47,7 +49,24 @@ sub BUILD {
     $self->cpus($cpus)                       if ( defined($cpus) );
     $self->output_filename($output_filename) if ( defined($output_filename) );
     $self->no_lsf(1)                         if (  defined($no_lsf) );
+    $self->intermediate_output_dir($intermediate_output_dir)  if (  defined($intermediate_output_dir) );
 
+}
+
+sub merge_results
+{
+   my ($self) = @_;
+   ( ( -e $self->proteins_file ) && !$self->help ) or die $self->usage_text;
+  
+   my $obj = Bio::InterProScanWrapper->new(
+       input_file      => $self->proteins_file,
+       _tmp_directory  => $self->tmp_directory,
+       cpus            => $self->cpus,
+       exec            => $self->exec_script,
+       output_filename => $self->output_filename,
+       use_lsf         => ($self->no_lsf == 1 ? 0 : 1),
+   );
+   $obj->merge_results($self->intermediate_output_dir);
 }
 
 sub run {
