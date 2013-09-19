@@ -43,14 +43,14 @@ sub _build__job_manager {
 
 sub _generate_memory_parameter {
     my ($self) = @_;
-    return "select[mem > ".$self->memory_in_mb."] rusage[mem=".$self->memory_in_mb."]  rusage[iprscantok=".$self->tokens_per_job."]  span[hosts=1]";
+    return "select[mem > ".$self->memory_in_mb."] rusage[mem=".$self->memory_in_mb.", iprscantok=".$self->tokens_per_job."] span[hosts=1]";
 }
 
 sub _submit_job {
     my ( $self, $command_to_run ) = @_;
     $self->_job_manager->submit(
-        -o => "out.o",
-        -e => "out.e",
+        -o => ".iprscan.o",
+        -e => ".iprscan.e",
         -M => $self->memory_in_mb,
         -R => $self->_generate_memory_parameter,
         -n => $self->_cpus_per_command,
@@ -120,8 +120,8 @@ sub run {
 sub _submit_merge_job {
     my ( $self,$dependancy_params) = @_;
     $self->_job_manager->submit(
-        -o => "merge.o",
-        -e => "merge.e",
+        -o => ".iprscan.o",
+        -e => ".iprscan.e",
         -M => $self->memory_in_mb,
         -R => $self->_generate_memory_parameter,
         -w => $dependancy_params,
