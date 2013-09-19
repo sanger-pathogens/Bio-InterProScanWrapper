@@ -30,6 +30,8 @@ has '_job_manager'        => ( is => 'ro', isa => 'LSF::JobManager', lazy     =>
 has 'exec'                => ( is => 'ro', isa => 'Str', default  => '/software/pathogen/external/apps/usr/local/iprscan-5.0.7/interproscan.sh' );
 has 'output_type'         => ( is => 'ro', isa => 'Str', default => 'gff3' );
 has '_output_suffix'      => ( is => 'ro', isa => 'Str', default  => '.out' );
+has 'tokens_per_job'      => ( is => 'ro', isa => 'Int', default  => 25 );
+
                           
 # A single instance uses more than 1 cpu so you need to reserve more slots
 has '_cpus_per_command'  => ( is => 'ro', isa => 'Int',  default  => 4 );
@@ -41,7 +43,7 @@ sub _build__job_manager {
 
 sub _generate_memory_parameter {
     my ($self) = @_;
-    return "select[mem > ".$self->memory_in_mb."] rusage[mem=".$self->memory_in_mb."] span[hosts=1]";
+    return "select[mem > ".$self->memory_in_mb."] rusage[mem=".$self->memory_in_mb."]  rusage[iprscantok=".$self->tokens_per_job."]  span[hosts=1]";
 }
 
 sub _submit_job {
@@ -122,7 +124,7 @@ sub _submit_merge_job {
         -e => "merge.e",
         -M => $self->memory_in_mb,
         -R => $self->_generate_memory_parameter,
-        -w => $dependancy_params
+        -w => $dependancy_params,
         $self->_create_merge_cmd
     );
 }

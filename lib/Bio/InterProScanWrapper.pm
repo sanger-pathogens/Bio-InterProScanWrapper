@@ -122,7 +122,7 @@ sub _expected_output_files {
 sub annotate {
     my ($self) = @_;
 
-    my $protein_files = $self->_create_protein_files() );
+    my $protein_files = $self->_create_protein_files() ;
     last if ( @{$protein_files} == 0 );
   
     my $job_runner;
