@@ -91,7 +91,7 @@ sub usage_text {
 
     return <<USAGE;
     Usage: $script_name [options]
-    Annotate eukaryotes using InterProScan
+    Annotate eukaryotes using InterProScan. It is limited to using 400 CPUs at once on the farm.
   
     # Run InterProScan using LSF
     annotate_eukaryotes -a proteins.faa
