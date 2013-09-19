@@ -11,6 +11,7 @@ provide a commandline interface to the annotation wrappers
 use Moose;
 use Getopt::Long qw(GetOptionsFromArray);
 use Cwd;
+use File::Basename;
 use Bio::InterProScanWrapper;
 
 has 'args'                    => ( is => 'ro', isa => 'ArrayRef', required => 1 );
@@ -20,7 +21,7 @@ has 'cpus'                    => ( is => 'rw', isa => 'Int',      default  => 10
 has 'exec_script'             => ( is => 'rw', isa => 'Str',      default  => '/software/pathogen/external/apps/usr/local/iprscan-5.0.7/interproscan.sh' );
 has 'proteins_file'           => ( is => 'rw', isa => 'Str' );
 has 'tmp_directory'           => ( is => 'rw', isa => 'Str', default => '/tmp' );
-has 'output_filename'         => ( is => 'rw', isa => 'Str', default => 'iprscan_results.gff' );
+has 'output_filename'         => ( is => 'rw', isa => 'Str', lazy => 1, builder => '_build_output_filename' );
 has 'no_lsf'                  => ( is => 'rw', isa => 'Bool', default => 0 );
 has 'intermediate_output_dir' => ( is => 'rw', isa => 'Maybe[Str]');
 
@@ -51,6 +52,18 @@ sub BUILD {
     $self->no_lsf(1)                         if (  defined($no_lsf) );
     $self->intermediate_output_dir($intermediate_output_dir)  if (  defined($intermediate_output_dir) );
 
+}
+
+sub _build_output_filename
+{
+  my ($self) = @_;
+  my $output_filename = 'iprscan_results.gff';
+  if(defined($self->proteins_file))
+  {
+    my($filename, $directories, $suffix) = fileparse($self->proteins_file);
+    $output_filename = getcwd().'/'.$filename.'.iprscan.gff';
+  }
+  return $output_filename;
 }
 
 sub merge_results
