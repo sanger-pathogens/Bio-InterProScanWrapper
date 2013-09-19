@@ -16,6 +16,7 @@ Take in a file of proteins and predict functions using interproscan
 
 use Moose;
 use File::Temp;
+use File::Path qw(remove_tree);
 use File::Copy;
 use Bio::SeqIO;
 use Bio::InterProScanWrapper::External::ParallelInterProScan;
@@ -35,6 +36,7 @@ has '_temp_directory_obj' =>
   ( is => 'ro', isa => 'File::Temp::Dir', lazy => 1, builder => '_build__temp_directory_obj' );
 has '_temp_directory_name' => ( is => 'ro', isa => 'Str', lazy => 1, builder => '_build__temp_directory_name' );
 has '_input_file_parser' => ( is => 'ro', lazy => 1, builder => '_build__input_file_parser' );
+has '_output_suffix'   => ( is => 'ro', isa => 'Str', default  => '.out' );
 
 has 'use_lsf' => ( is => 'ro', isa => 'Bool', default => 0 );
 
@@ -53,7 +55,7 @@ sub _build__protein_files_per_cpu
 
 sub _build__temp_directory_obj {
     my ($self) = @_;
-    return File::Temp->newdir( DIR => $self->_tmp_directory, CLEANUP => 1 );
+    return File::Temp->newdir( DIR => $self->_tmp_directory, CLEANUP => 0 );
 }
 
 sub _build__temp_directory_name {
@@ -81,15 +83,13 @@ sub _create_protein_file {
     return $output_filename;
 }
 
-sub _create_a_number_of_protein_files {
-    my ( $self, $files_to_create ) = @_;
+sub _create_protein_files {
+    my ( $self ) = @_;
     my %file_names;
     my $counter = 0;
     while ( my $seq = $self->_input_file_parser->next_seq ) {
         $file_names{ $self->_create_protein_file( $seq, int( $counter / $self->_proteins_per_file ) ) }++;
-
         $counter++;
-        last if ( $self->_protein_files_per_cpu * $self->cpus * $self->_proteins_per_file == $counter );
     }
     my @uniq_files = sort keys %file_names;
     return \@uniq_files;
@@ -104,58 +104,74 @@ sub _delete_list_of_files {
 }
 
 sub _expected_output_files {
-    my ( $self, $input_files ) = @_;
-    my @output_files;
-
-    for my $file ( @{$input_files} ) {
-        push( @output_files, $file . '.out' );
+    my ( $self, $input_directory ) = @_;
+    my $output_suffix = $self->_output_suffix;
+    
+    opendir(my $dh, $input_directory) || die "can't opendir $input_directory: $!";
+    my @output_files = grep { /$output_suffix$/ } readdir($dh);
+    closedir($dh);
+    
+    for(my $i=0;$i < @output_files; $i++)
+    {
+      $output_files[$i] = join('/',($input_directory, $output_files[$i]));
     }
-
+    
     return \@output_files;
 }
 
 sub annotate {
     my ($self) = @_;
 
-    while ( my $protein_files = $self->_create_a_number_of_protein_files( $self->cpus ) ) {
-        last if ( @{$protein_files} == 0 );
-
-        my $job_runner;
-        if ( $self->use_lsf ) {
-
-            # split over multiple hosts with LSF
-            $job_runner = Bio::InterProScanWrapper::External::LSFInterProScan->new(
-                input_files => $protein_files,
-                exec        => $self->exec,
-            );
-        }
-        else {
-            # Run on a single host with parallel
-            $job_runner = Bio::InterProScanWrapper::External::ParallelInterProScan->new(
-                input_files_path => join( '/', ( $self->_temp_directory_name, '*' . $self->_protein_file_suffix ) ),
-                exec             => $self->exec,
-                cpus             => $self->cpus,
-            );
-        }
-        $job_runner->run;
-
-        # delete intermediate input files where there is 1 protein per file
-        $self->_delete_list_of_files($protein_files);
-
-        my $intermediate_results_filename    = join( '/', ( $self->_temp_directory_name, 'block_merged_results.gff' ) );
-        my $output_files                     = $self->_expected_output_files($protein_files);
-        my $merge_intermediate_gff_files_obj = Bio::InterProScanWrapper::ParseInterProOutput->new(
-            gff_files   => $output_files,
-            output_file => $intermediate_results_filename,
+    my $protein_files = $self->_create_protein_files() ;
+    last if ( @{$protein_files} == 0 );
+  
+    my $job_runner;
+    if ( $self->use_lsf ) {
+  
+        # split over multiple hosts with LSF
+        $job_runner = Bio::InterProScanWrapper::External::LSFInterProScan->new(
+            input_files         => $protein_files,
+            exec                => $self->exec,
+            input_file          => $self->input_file,
+            output_file         => $self->output_filename,
+            temp_directory_name => $self->_temp_directory_name
         );
-        $merge_intermediate_gff_files_obj->merge_files;
-        $self->_delete_list_of_files($output_files);
-        $self->_merge_block_results_with_final($intermediate_results_filename);
     }
-
-    $self->_merge_proteins_into_gff( $self->input_file, $self->output_filename );
-
+    else {
+        # Run on a single host with parallel
+        $job_runner = Bio::InterProScanWrapper::External::ParallelInterProScan->new(
+            input_files_path    => join( '/', ( $self->_temp_directory_name, '*' . $self->_protein_file_suffix ) ),
+            exec                => $self->exec,
+            cpus                => $self->cpus,
+            input_file          => $self->input_file,
+            output_file         => $self->output_filename,
+            temp_directory_name => $self->_temp_directory_name
+        );
+    }
+    $job_runner->run;
+  
     return $self;
+}
+
+
+sub merge_results
+{
+  my ($self, $temp_directory) = @_;
+
+  # delete intermediate input files where there is 1 protein per file
+  # move to separate cleanup job (ended)
+
+  my $output_files        = $self->_expected_output_files($temp_directory);
+  my $merge_gff_files_obj = Bio::InterProScanWrapper::ParseInterProOutput->new(
+      gff_files   => $output_files,
+      output_file => $self->output_filename,
+  );
+  $merge_gff_files_obj->merge_files;
+  $self->_delete_list_of_files($output_files);
+  $self->_merge_proteins_into_gff( $self->input_file, $self->output_filename );
+  
+  remove_tree($temp_directory);
+  return 1;
 }
 
 sub _merge_proteins_into_gff {
