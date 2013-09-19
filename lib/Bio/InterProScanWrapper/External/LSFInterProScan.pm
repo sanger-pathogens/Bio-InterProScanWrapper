@@ -30,7 +30,7 @@ has '_job_manager'        => ( is => 'ro', isa => 'LSF::JobManager', lazy     =>
 has 'exec'                => ( is => 'ro', isa => 'Str', default  => '/software/pathogen/external/apps/usr/local/iprscan-5.0.7/interproscan.sh' );
 has 'output_type'         => ( is => 'ro', isa => 'Str', default => 'gff3' );
 has '_output_suffix'      => ( is => 'ro', isa => 'Str', default  => '.out' );
-has 'tokens_per_job'      => ( is => 'ro', isa => 'Int', default  => 25 );
+has 'tokens_per_job'      => ( is => 'ro', isa => 'Int', default  => 50 );
 
                           
 # A single instance uses more than 1 cpu so you need to reserve more slots
