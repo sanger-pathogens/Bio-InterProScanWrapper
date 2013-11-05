@@ -72,7 +72,7 @@ sub _construct_cmd
       ' ',
       (
           $self->exec, '-f', $self->output_type, '--goterms', '--iprlookup',
-          '--pathways', '-i', $sequence_temp_files_directory.'/'.'$LSB_JOBINDEX'.'.seq', '--outfile', $sequence_temp_files_directory.'/'.'\$LSB_JOBINDEX'.'.seq'. $self->_output_suffix
+          '--pathways', '-i', $sequence_temp_files_directory.'/'.'$LSB_JOBINDEX'.'.seq', '--outfile', $sequence_temp_files_directory.'/'.'$LSB_JOBINDEX'.'.seq'. $self->_output_suffix
       )
   );
 }
