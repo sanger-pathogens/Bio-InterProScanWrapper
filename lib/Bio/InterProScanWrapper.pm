@@ -86,7 +86,7 @@ sub _create_protein_file {
 sub _create_protein_files {
     my ( $self ) = @_;
     my %file_names;
-    my $counter = 0;
+    my $counter = 1;
     while ( my $seq = $self->_input_file_parser->next_seq ) {
         $file_names{ $self->_create_protein_file( $seq, int( $counter / $self->_proteins_per_file ) ) }++;
         $counter++;

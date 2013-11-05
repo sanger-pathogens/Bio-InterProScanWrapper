@@ -52,8 +52,7 @@ sub _submit_job {
 
     my($filename, $directories, $suffix) = fileparse($self->input_file);
     $filename =~ s!\W!_!gi;
-    my $number_of_files_upper_limit = $number_of_files -1 ;
-    my $job_array_name = "iprscan_".$filename."_".int(rand(100))."[0-$number_of_files_upper_limit]";
+    my $job_array_name = "iprscan_".$filename."_".int(rand(100))."[1-$number_of_files]";
     
     $self->_job_manager->submit(
         -o => ".iprscan.o",
@@ -73,7 +72,7 @@ sub _construct_cmd
       ' ',
       (
           $self->exec, '-f', $self->output_type, '--goterms', '--iprlookup',
-          '--pathways', '-i', $sequence_temp_files_directory.'/'.'\$LSB_JOBINDEX'.'.seq', '--outfile', $sequence_temp_files_directory.'/'.'\$LSB_JOBINDEX'.'.seq'. $self->_output_suffix
+          '--pathways', '-i', $sequence_temp_files_directory.'/'.'$LSB_JOBINDEX'.'.seq', '--outfile', $sequence_temp_files_directory.'/'.'\$LSB_JOBINDEX'.'.seq'. $self->_output_suffix
       )
   );
 }
@@ -98,7 +97,7 @@ sub run {
     my($filename, $directories, $suffix) = fileparse($self->input_files->[0]);
     my $number_of_input_files = @{$self->input_files};
     
-    my $submitted_job = $self->_submit_job($directories,$number_of_input_file );
+    my $submitted_job = $self->_submit_job($directories,$number_of_input_files );
     
     if(defined($submitted_job))
     {
