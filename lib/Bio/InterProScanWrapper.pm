@@ -74,7 +74,7 @@ sub _build__input_file_parser {
 
 sub _create_protein_file {
     my ( $self, $seq_io_protein, $counter ) = @_;
-    my $output_filename = $self->_temp_directory_name . '/' . $counter . $self->_protein_file_suffix;
+    my $output_filename = $self->_temp_directory_name . '/' . ($counter +1) . $self->_protein_file_suffix;
     my $fout         = Bio::SeqIO->new( -file => ">>" . $output_filename, -format => 'Fasta', -alphabet => 'protein' );
     my $raw_sequence = $seq_io_protein->seq;
     $raw_sequence =~ s/\*//g;
@@ -86,7 +86,7 @@ sub _create_protein_file {
 sub _create_protein_files {
     my ( $self ) = @_;
     my %file_names;
-    my $counter = 1;
+    my $counter = 0;
     while ( my $seq = $self->_input_file_parser->next_seq ) {
         $file_names{ $self->_create_protein_file( $seq, int( $counter / $self->_proteins_per_file ) ) }++;
         $counter++;
