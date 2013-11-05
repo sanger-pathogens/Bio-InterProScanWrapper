@@ -18,19 +18,20 @@ Run interproscan via LSF jobs
 use Moose;
 use LSF;
 use LSF::JobManager;
+use File::Basename;
 use Bio::InterProScanWrapper::Exceptions;
 
 has 'input_file'          => ( is => 'ro', isa => 'Str',        required => 1);
 has 'output_file'         => ( is => 'ro', isa => 'Str',        required => 1);
 has 'temp_directory_name' => ( is => 'ro', isa => 'Str',        required => 1);
 has 'input_files'         => ( is => 'ro', isa => 'ArrayRef',        required => 1 );
-has 'memory_in_mb'        => ( is => 'ro', isa => 'Int',             default  => 6000 );
+has 'memory_in_mb'        => ( is => 'ro', isa => 'Int',             default  => 5000 );
 has 'queue'               => ( is => 'ro', isa => 'Str',             default  => 'normal' );
 has '_job_manager'        => ( is => 'ro', isa => 'LSF::JobManager', lazy     => 1, builder => '_build__job_manager' );
 has 'exec'                => ( is => 'ro', isa => 'Str', default  => '/software/pathogen/external/apps/usr/local/iprscan-5.0.7/interproscan.sh' );
 has 'output_type'         => ( is => 'ro', isa => 'Str', default => 'gff3' );
 has '_output_suffix'      => ( is => 'ro', isa => 'Str', default  => '.out' );
-has 'tokens_per_job'      => ( is => 'ro', isa => 'Int', default  => 50 );
+has 'tokens_per_job'      => ( is => 'ro', isa => 'Int', default  => 25 );
 
                           
 # A single instance uses more than 1 cpu so you need to reserve more slots
@@ -47,41 +48,31 @@ sub _generate_memory_parameter {
 }
 
 sub _submit_job {
-    my ( $self, $command_to_run ) = @_;
+    my ( $self, $sequence_temp_files_directory, $number_of_files ) = @_;
+
+    my($filename, $directories, $suffix) = fileparse($self->input_file);
+    $filename =~ s!\W!_!gi;
+    my $job_array_name = "iprscan_".$filename."_".int(rand(100))."[1-$number_of_files]";
+    
     $self->_job_manager->submit(
         -o => ".iprscan.o",
         -e => ".iprscan.e",
         -M => $self->memory_in_mb,
         -R => $self->_generate_memory_parameter,
         -n => $self->_cpus_per_command,
-        $command_to_run
+        -J => $job_array_name,
+        $self->_construct_cmd($sequence_temp_files_directory)
     );
-}
-
-sub _report_errors {
-    my ($self) = @_;
-    my @errors;
-
-    for my $job ( $self->_job_manager->jobs ) {
-        if ( $job->history->exit_status != 0 ) {
-            push( @errors, $job );
-        }
-    }
-
-    if ( scalar @errors != 0 ) {
-        Bio::InterProScanWrapper::Exceptions::LSFJobFailed->throw( error => "The following jobs failed: ", join( ",", @errors ) );
-    }
-    $self->_job_manager->clear;
 }
 
 sub _construct_cmd
 { 
-  my ($self, $input_file) = @_;
+  my ($self, $sequence_temp_files_directory) = @_;
   my $cmd = join(
       ' ',
       (
           $self->exec, '-f', $self->output_type, '--goterms', '--iprlookup',
-          '--pathways', '-i', $input_file, '--outfile', $input_file. $self->_output_suffix
+          '--pathways', '-i', $sequence_temp_files_directory.'/'.'$LSB_JOBINDEX'.'.seq', '--outfile', $sequence_temp_files_directory.'/'.'\$LSB_JOBINDEX'.'.seq'. $self->_output_suffix
       )
   );
 }
@@ -102,13 +93,15 @@ sub _construct_dependancy_params
 sub run {
     my ($self) = @_;
     my @submitted_job_ids;
-
-    for my $input_file ( @{ $self->input_files } ) {
-        my $submitted_job = $self->_submit_job($self->_construct_cmd($input_file));
-        if(defined($submitted_job))
-        {
-          push(@submitted_job_ids, $submitted_job->id);
-        }
+    
+    my($filename, $directories, $suffix) = fileparse($self->input_files->[0]);
+    my $number_of_input_files = @{$self->input_files};
+    
+    my $submitted_job = $self->_submit_job($directories,$number_of_input_files );
+    
+    if(defined($submitted_job))
+    {
+      push(@submitted_job_ids, $submitted_job->id);
     }
     
     my $dependancy_params =  $self->_construct_dependancy_params(\@submitted_job_ids);
