@@ -29,11 +29,11 @@ ok($obj = Bio::InterProScanWrapper->new(
   _proteins_per_file  => 2,
 ),'Initialise object creating 2 protein files per iteration');
 
-ok(my $file_names = $obj->_create_a_number_of_protein_files(2), 'create files');
+ok(my $file_names = $obj->_create_protein_files(2), 'create files');
 is(read_file($file_names->[0]),read_file('t/data/interpro.seq'), 'first protein the same');
 is(read_file($file_names->[1]),read_file('t/data/interpro2.seq'), '2nd protein the same');
-ok($file_names->[0] =~ /0.seq$/, 'file name as expected');
-ok($file_names->[1] =~ /1.seq$/, 'file name as expected');
+ok($file_names->[0] =~ /1.seq$/, 'file name as expected');
+ok($file_names->[1] =~ /2.seq$/, 'file name as expected');
 
 
 copy('t/data/intermediate_interpro.gff', 't/data/intermediate.gff');
