@@ -35,7 +35,7 @@ has 'tokens_per_job'      => ( is => 'ro', isa => 'Int', default  => 25 );
 
                           
 # A single instance uses more than 1 cpu so you need to reserve more slots
-has '_cpus_per_command'  => ( is => 'ro', isa => 'Int',  default  => 4 );
+has '_cpus_per_command'  => ( is => 'ro', isa => 'Int',  default  => 7 );
 
 sub _build__job_manager {
     my ($self) = @_;
