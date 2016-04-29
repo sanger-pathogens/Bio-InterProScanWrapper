@@ -1,10 +1,10 @@
-package Bio::InterProScanWrapper::CommandLine::AnnotateEukaryotes;
+package Bio::InterProScanWrapper::CommandLine::FarmInterproscan;
 
-# ABSTRACT: provide a commandline interface to the annotation wrappers
+# ABSTRACT: provide a commandline interface to the interproscan wrapper
 
 =head1 SYNOPSIS
 
-provide a commandline interface to the annotation wrappers
+provide a commandline interface to the interproscan wrapper
 
 =cut
 
@@ -104,22 +104,22 @@ sub usage_text {
 
     return <<USAGE;
     Usage: $script_name [options]
-    Annotate eukaryotes using InterProScan. It is limited to using 400 CPUs at once on the farm.
+    Run InterProScan on the farm. It is limited to using 400 CPUs at once on the farm.
   
     # Run InterProScan using LSF
-    annotate_eukaryotes -a proteins.faa
+    farm_interproscan -a proteins.faa
     
     # Provide an output file name 
-    annotate_eukaryotes -a proteins.faa -o output.gff
+    farm_interproscan -a proteins.faa -o output.gff
     
     # Create 200 jobs at a time, writing out intermediate results to a file
-    annotate_eukaryotes -a proteins.faa -p 200
+    farm_interproscan -a proteins.faa -p 200
     
     # Run on a single host (no LSF). '-p x' needs x*2 CPUs and x*2GB of RAM to be available
-    annotate_eukaryotes -a proteins.faa --no_lsf -p 10 
+    farm_interproscan -a proteins.faa --no_lsf -p 10 
 
     # This help message
-    annotate_eukaryotes -h
+    farm_interproscan -h
 
 USAGE
 }
