@@ -31,7 +31,7 @@ Usage
     $script_name -a proteins.faa --no_lsf -p 10 
 
     # This help message
-    annotate_eukaryotes -h
+    farm_interproscan -h
 
 
 Install
