@@ -1,19 +1,19 @@
 #!/usr/bin/env perl
 
-package Bio::InterProScanWrapper::Main::EukaryotesInterProScanWrapper;
+package Bio::InterProScanWrapper::Main::InterProScanWrapper;
 
-# ABSTRACT: Annotate some eukaryotes
-# PODNAME: annotate_eukaryotes
+# ABSTRACT: Run interpro scan
+# PODNAME: farm_interproscan
 
 =head1 SYNOPSIS
 
-Wrapper script to annotate eukaryotes.
+Wrapper script to run interproscan
 
 =cut
 
 BEGIN { unshift( @INC, '../lib' ) }
 BEGIN { unshift( @INC, './lib' ) }
-BEGIN { unshift( @INC, '/software/pathogen/internal/prod/lib/' ) }
-use Bio::InterProScanWrapper::CommandLine::AnnotateEukaryotes;
+#BEGIN { unshift( @INC, '/software/pathogen/internal/prod/lib/' ) }
+use Bio::InterProScanWrapper::CommandLine::FarmInterproscan;
 
-Bio::InterProScanWrapper::CommandLine::AnnotateEukaryotes->new(args => \@ARGV, script_name => $0)->run;
+Bio::InterProScanWrapper::CommandLine::FarmInterproscan->new(args => \@ARGV, script_name => $0)->run;
