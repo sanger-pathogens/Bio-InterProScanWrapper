@@ -27,7 +27,7 @@ has 'intermediate_output_dir' => ( is => 'rw', isa => 'Maybe[Str]');
 
 sub BUILD {
     my ($self) = @_;
-    my ( $proteins_file, $tmp_directory, $help, $exec_script, $cpus, $output_filename, $no_lsf,$intermediate_output_dir );
+    my ( $proteins_file, $tmp_directory, $help, $exec_script, $cpus, $output_filename, $no_lsf, $intermediate_output_dir );
 
     GetOptionsFromArray(
         $self->args,
@@ -95,6 +95,16 @@ sub run {
         use_lsf         => ($self->no_lsf == 1 ? 0 : 1)
     );
     $obj->annotate;
+
+    # 12.07.2016: Users would like to know which version of interpro was used to produce their
+    # gff files. GFF version 3 needs the first line to be the GFF pragma so we insert this as
+    # the second line as a comment using sed a command (will work when file is not empty)
+
+    if(-e $self->output_filename){      
+	my $line = "#Produced using: ".$self->exec_script; 
+	my $cmd = "sed '1 a$line' ".$self->output_filename." > tmp.file && mv tmp.file ".$self->output_filename;
+        system($cmd) and warn "Could not prepend Interpro version text to ".$self->output_filename;
+    }
 
 }
 
