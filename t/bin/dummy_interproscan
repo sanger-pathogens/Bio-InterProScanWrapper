@@ -10,6 +10,6 @@ GetOptions(
     'pathways' => \$pathways,
     'outfile=s' => \$out
 );
-system("touch input_proteins.gff");
+system("touch input_proteins.faa.iprscan.gff");
 system("touch $out");
 1;
