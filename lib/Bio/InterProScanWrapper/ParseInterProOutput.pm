@@ -19,6 +19,7 @@ use Moose;
 use Bio::InterProScanWrapper::Exceptions;
 
 has 'gff_files'   => ( is => 'ro', isa => 'ArrayRef', required => 1 );
+has 'exec'   => ( is => 'ro', isa => 'Str', required => 1 );
 has 'output_file' => ( is => 'ro', isa => 'Str', default => 'output.gff' );
 
 has '_output_file_fh'  => ( is => 'ro',     lazy    => 1, builder => '_build__output_file_fh' );
@@ -35,7 +36,7 @@ sub _build__output_file_fh
 sub _header
 {
   my ($self) = @_;
-  return '##gff-version 3'."\n";
+  return '##gff-version 3'."\n".'#Produced using: '.$self->exec."\n";
 }
 
 sub merge_files
