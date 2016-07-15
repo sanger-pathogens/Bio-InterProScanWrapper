@@ -96,16 +96,6 @@ sub run {
     );
     $obj->annotate;
 
-    # 12.07.2016: Users would like to know which version of interpro was used to produce their
-    # gff files. GFF version 3 needs the first line to be the GFF pragma so we insert this as
-    # the second line as a comment using sed a command (will work when file is not empty)
-
-    if(-e $self->output_filename){      
-	my $line = "#Produced using: ".$self->exec_script; 
-	my $cmd = "sed '1 a$line' ".$self->output_filename." > tmp.file && mv tmp.file ".$self->output_filename;
-        system($cmd) and warn "Could not prepend Interpro version text to ".$self->output_filename;
-    }
-
 }
 
 sub usage_text {
