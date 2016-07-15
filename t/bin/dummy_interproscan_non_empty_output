@@ -11,5 +11,6 @@ GetOptions(
     'outfile=s' => \$out
 );
 system("touch input_proteins.faa.iprscan.gff");
+system("echo \"##gff-version 3\" > input_proteins.faa.iprscan.gff");
 system("touch $out");
 1;

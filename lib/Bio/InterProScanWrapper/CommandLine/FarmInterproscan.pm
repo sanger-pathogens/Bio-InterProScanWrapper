@@ -27,7 +27,7 @@ has 'intermediate_output_dir' => ( is => 'rw', isa => 'Maybe[Str]');
 
 sub BUILD {
     my ($self) = @_;
-    my ( $proteins_file, $tmp_directory, $help, $exec_script, $cpus, $output_filename, $no_lsf,$intermediate_output_dir );
+    my ( $proteins_file, $tmp_directory, $help, $exec_script, $cpus, $output_filename, $no_lsf, $intermediate_output_dir );
 
     GetOptionsFromArray(
         $self->args,

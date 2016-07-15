@@ -165,6 +165,7 @@ sub merge_results
   my $merge_gff_files_obj = Bio::InterProScanWrapper::ParseInterProOutput->new(
       gff_files   => $output_files,
       output_file => $self->output_filename,
+      exec => $self->exec,
   );
   $merge_gff_files_obj->merge_files;
   $self->_delete_list_of_files($output_files);

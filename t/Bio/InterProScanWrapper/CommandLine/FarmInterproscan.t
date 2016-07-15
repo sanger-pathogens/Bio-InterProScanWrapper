@@ -9,14 +9,14 @@ with 'TestHelper';
 
 BEGIN {
     use Test::Most;
-    use_ok('Bio::InterProScanWrapper::CommandLine::AnnotateEukaryotes');
+    use_ok('Bio::InterProScanWrapper::CommandLine::FarmInterproscan');
 }
-my $script_name = 'Bio::InterProScanWrapper::CommandLine::AnnotateEukaryotes';
+my $script_name = 'Bio::InterProScanWrapper::CommandLine::FarmInterproscan';
 my $cwd = getcwd();
 
 my %scripts_and_expected_files = (
     '-a t/data/input_proteins.faa -e '.$cwd.'/t/bin/dummy_interproscan --no_lsf' =>
-      ['input_proteins.gff', 't/data/empty_annotation.gff'],
+      ['input_proteins.faa.iprscan.gff', 't/data/empty_annotation.gff'],
 );
 
 mock_execute_script_and_check_output( $script_name, \%scripts_and_expected_files );
