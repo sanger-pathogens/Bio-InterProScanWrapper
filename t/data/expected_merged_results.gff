@@ -1,4 +1,5 @@
 ##gff-version 3
+#Produced using: /path/to/interpro
 ##sequence-region Q97R95 1 369
 Q97R95	.	polypeptide	1	369	.	+	.	md5=bb3bde1de955af5b7f49a84ba2c4d4ae;ID=Q97R95
 Q97R95	PRINTS	protein_match	41	55	.	+	.	Name=PR00474;signature_desc=Glutamate 5-kinase family signature;Target=Q97R95 41 55;status=T;ID=match$1_41_55;Ontology_term="GO:0004349","GO:0006561";date=31-07-2013;Dbxref="InterPro:IPR001057"
