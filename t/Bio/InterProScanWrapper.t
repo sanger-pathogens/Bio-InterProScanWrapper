@@ -3,7 +3,7 @@ use strict;
 use warnings;
 use Data::Dumper;
 use Cwd;
-use File::Slurp;
+use Test::Files qw(compare_ok);
 use File::Copy;
 
 BEGIN { unshift( @INC, './lib' ) }
@@ -30,15 +30,27 @@ ok($obj = Bio::InterProScanWrapper->new(
 ),'Initialise object creating 2 protein files per iteration');
 
 ok(my $file_names = $obj->_create_protein_files(2), 'create files');
-is(read_file($file_names->[0]),read_file('t/data/interpro.seq'), 'first protein the same');
-is(read_file($file_names->[1]),read_file('t/data/interpro2.seq'), '2nd protein the same');
+compare_ok(
+	$file_names->[0],
+	't/data/interpro.seq', 
+	'first protein the same'
+);
+compare_ok(
+	$file_names->[1],
+	't/data/interpro2.seq', 
+	'2nd protein the same'
+);
 ok($file_names->[0] =~ /1.seq$/, 'file name as expected');
 ok($file_names->[1] =~ /2.seq$/, 'file name as expected');
 
 
 copy('t/data/intermediate_interpro.gff', 't/data/intermediate.gff');
 ok($obj->_merge_proteins_into_gff($obj->input_file, 't/data/intermediate.gff'));
-is(read_file('t/data/intermediate.gff'),read_file('t/data/expected_merged_proteins.gff'), 'proteins merged with gff');
+compare_ok(
+	't/data/intermediate.gff',
+	't/data/expected_merged_proteins.gff', 
+	'proteins merged with gff'
+);
 
 unlink('t/data/intermediate.gff');
 done_testing();
