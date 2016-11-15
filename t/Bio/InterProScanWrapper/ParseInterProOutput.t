@@ -2,7 +2,7 @@
 use strict;
 use warnings;
 use Data::Dumper;
-use File::Slurp;
+use Test::Files qw(compare_ok);
 
 
 BEGIN { unshift( @INC, './lib' ) }
@@ -20,7 +20,11 @@ ok(my $obj = Bio::InterProScanWrapper::ParseInterProOutput->new(
 ),'initialise object');
 
 ok($obj->merge_files, 'Merge the files together');
-is(read_file('t/data/expected_merged_results.gff'), read_file('output.gff'), 'content as expected');
+compare_ok(
+	't/data/expected_merged_results.gff', 
+	'output.gff', 
+	'content as expected'
+);
 
 unlink('output.gff');
 
