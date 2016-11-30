@@ -3,7 +3,6 @@ use Moose::Role;
 use Test::Most;
 use Test::Files qw(compare_ok);
 
-
 sub mock_execute_script_and_check_output {
     my ( $script_name, $scripts_and_expected_files ) = @_;
     

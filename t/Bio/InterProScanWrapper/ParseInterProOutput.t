@@ -4,7 +4,6 @@ use warnings;
 use Data::Dumper;
 use Test::Files qw(compare_ok);
 
-
 BEGIN { unshift( @INC, './lib' ) }
 
 BEGIN {

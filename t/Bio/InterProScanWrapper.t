@@ -40,12 +40,14 @@ compare_ok(
 	't/data/interpro2.seq', 
 	'2nd protein the same'
 );
+
 ok($file_names->[0] =~ /1.seq$/, 'file name as expected');
 ok($file_names->[1] =~ /2.seq$/, 'file name as expected');
 
 
 copy('t/data/intermediate_interpro.gff', 't/data/intermediate.gff');
 ok($obj->_merge_proteins_into_gff($obj->input_file, 't/data/intermediate.gff'));
+
 compare_ok(
 	't/data/intermediate.gff',
 	't/data/expected_merged_proteins.gff', 
