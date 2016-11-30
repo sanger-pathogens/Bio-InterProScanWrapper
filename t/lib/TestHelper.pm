@@ -1,8 +1,7 @@
 package TestHelper;
 use Moose::Role;
 use Test::Most;
-use File::Slurper;
-
+use Test::Files qw(compare_ok);
 
 sub mock_execute_script_and_check_output {
     my ( $script_name, $scripts_and_expected_files ) = @_;
@@ -26,7 +25,7 @@ sub mock_execute_script_and_check_output {
             my $actual_output_file_name = $scripts_and_expected_files->{$script_parameters}->[0];
             my $expected_output_file_name = $scripts_and_expected_files->{$script_parameters}->[1];
             ok(-e $actual_output_file_name, "Actual output file exists $actual_output_file_name");
-            is(read_text($actual_output_file_name), read_text($expected_output_file_name), "Actual and expected output match for '$script_parameters'");
+            compare_ok($actual_output_file_name, $expected_output_file_name, "Actual and expected output match for '$script_parameters'");
             unlink($actual_output_file_name);
         }
         close STDOUT;
