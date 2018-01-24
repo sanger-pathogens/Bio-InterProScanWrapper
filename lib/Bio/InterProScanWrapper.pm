@@ -23,22 +23,22 @@ use Bio::InterProScanWrapper::External::ParallelInterProScan;
 use Bio::InterProScanWrapper::ParseInterProOutput;
 use Bio::InterProScanWrapper::External::LSFInterProScan;
 
-has 'input_file'             => ( is => 'ro', isa => 'Str', required => 1 );
-has 'cpus'                   => ( is => 'ro', isa => 'Int', default  => 1 );
-has 'exec'                   => ( is => 'ro', isa => 'Str', required => 1 );
-has 'output_filename'        => ( is => 'ro', isa => 'Str', default  => 'iprscan_results.gff' );
-has '_protein_file_suffix'   => ( is => 'ro', isa => 'Str', default  => '.seq' );
-has '_tmp_directory'         => ( is => 'ro', isa => 'Str', default  => '/tmp' );
+has 'input_file'              => ( is => 'ro', isa => 'Str',    required => 1 );
+has 'translation_table'       => ( is => 'ro', isa => 'Int',    required => 1 );
+has 'cpus'                    => ( is => 'ro', isa => 'Int',    default  => 1 );
+has 'exec'                    => ( is => 'ro', isa => 'Str',    required => 1 );
+has 'output_filename'         => ( is => 'ro', isa => 'Str',    default  => 'iprscan_results.gff' );
+has 'protein_file'            => ( is => 'ro', isa => 'Str',    lazy => 1, builder => '_build__input_protein_file' ); );
+has '_protein_file_suffix'    => ( is => 'ro', isa => 'Str',    default  => '.seq' );
+has '_tmp_directory'          => ( is => 'ro', isa => 'Str',    default  => '/tmp' );
 has '_default_protein_files_per_cpu' => ( is => 'ro', isa => 'Int', default  => 20 );
-has '_protein_files_per_cpu' => ( is => 'ro', isa => 'Int',  lazy => 1, builder => '_build__protein_files_per_cpu' );
-has '_proteins_per_file'     => ( is => 'ro', isa => 'Int', default  => 100 );
-has '_temp_directory_obj' =>
-  ( is => 'ro', isa => 'File::Temp::Dir', lazy => 1, builder => '_build__temp_directory_obj' );
-has '_temp_directory_name' => ( is => 'ro', isa => 'Str', lazy => 1, builder => '_build__temp_directory_name' );
-has '_input_file_parser' => ( is => 'ro', lazy => 1, builder => '_build__input_file_parser' );
-has '_output_suffix'   => ( is => 'ro', isa => 'Str', default  => '.out' );
-
-has 'use_lsf' => ( is => 'ro', isa => 'Bool', default => 0 );
+has '_protein_files_per_cpu'  => ( is => 'ro', isa => 'Int',    lazy => 1, builder => '_build__protein_files_per_cpu' );
+has '_proteins_per_file'      => ( is => 'ro', isa => 'Int',    default  => 100 );
+has '_temp_directory_obj'     =>( is => 'ro', isa => 'File::Temp::Dir', lazy => 1, builder => '_build__temp_directory_obj' );
+has '_temp_directory_name'    => ( is => 'ro', isa => 'Str',    lazy => 1, builder => '_build__temp_directory_name' );
+has '_input_file_parser'      => ( is => 'ro', lazy => 1,       builder => '_build__input_file_parser' );
+has '_output_suffix'          => ( is => 'ro', isa => 'Str',    default  => '.out' );
+has 'use_lsf'                 => ( is => 'ro', isa => 'Bool',   default => 0 );
 
 sub _build__protein_files_per_cpu
 {
@@ -63,11 +63,21 @@ sub _build__temp_directory_name {
     return $self->_temp_directory_obj->dirname();
 }
 
+sub _build__input_protein_file {
+  my ($self) = @_;
+  if ( $input_is_gff ) { 
+#    $input_protein_file = $self->_extract_proteins_from_gff; 
+  } else {
+    $input_protein_file = $self->input_file;
+  }
+  return $input_protein_file;
+}
+
 sub _build__input_file_parser {
     my ($self) = @_;
     return Bio::SeqIO->new(
         -format   => 'Fasta',
-        -file     => $self->input_file,
+        -file     => $self->protein_file,
         -alphabet => 'protein'
     );
 }
@@ -132,7 +142,7 @@ sub annotate {
         $job_runner = Bio::InterProScanWrapper::External::LSFInterProScan->new(
             input_files         => $protein_files,
             exec                => $self->exec,
-            input_file          => $self->input_file,
+            input_file          => $self->protein_file,
             output_file         => $self->output_filename,
             temp_directory_name => $self->_temp_directory_name
         );
@@ -143,7 +153,7 @@ sub annotate {
             input_files_path    => join( '/', ( $self->_temp_directory_name, '*' . $self->_protein_file_suffix ) ),
             exec                => $self->exec,
             cpus                => $self->cpus,
-            input_file          => $self->input_file,
+            input_file          => $self->protein_file,
             output_file         => $self->output_filename,
             temp_directory_name => $self->_temp_directory_name
         );
@@ -169,7 +179,7 @@ sub merge_results
   );
   $merge_gff_files_obj->merge_files;
   $self->_delete_list_of_files($output_files);
-  $self->_merge_proteins_into_gff( $self->input_file, $self->output_filename );
+  $self->_merge_proteins_into_gff( $self->protein_file, $self->output_filename );
   
   remove_tree($temp_directory);
   return 1;
