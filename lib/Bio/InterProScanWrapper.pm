@@ -19,12 +19,15 @@ use File::Temp;
 use File::Path qw(remove_tree);
 use File::Copy;
 use Bio::SeqIO;
+use Bio::Roary::ExtractProteomeFromGFF;
 use Bio::InterProScanWrapper::External::ParallelInterProScan;
 use Bio::InterProScanWrapper::ParseInterProOutput;
 use Bio::InterProScanWrapper::External::LSFInterProScan;
+use Bio::InterProScanWrapper::Exceptions;
 
 has 'input_file'              => ( is => 'ro', isa => 'Str',    required => 1 );
-has 'translation_table'       => ( is => 'ro', isa => 'Int',    default  => 0 );
+has 'translation_table'       => ( is => 'ro', isa => 'Int',    default  => 1 );
+has 'input_is_gff'            => ( is => 'ro', isa => 'Bool',   default  => 0 );
 has 'cpus'                    => ( is => 'ro', isa => 'Int',    default  => 1 );
 has 'exec'                    => ( is => 'ro', isa => 'Str',    required => 1 );
 has 'output_filename'         => ( is => 'ro', isa => 'Str',    default  => 'iprscan_results.gff' );
@@ -35,7 +38,7 @@ has '_protein_files_per_cpu'  => ( is => 'ro', isa => 'Int',    lazy => 1, build
 has '_proteins_per_file'      => ( is => 'ro', isa => 'Int',    default  => 100 );
 has '_temp_directory_obj'     =>( is => 'ro', isa => 'File::Temp::Dir', lazy => 1, builder => '_build__temp_directory_obj' );
 has '_temp_directory_name'    => ( is => 'ro', isa => 'Str',    lazy => 1, builder => '_build__temp_directory_name' );
-has 'protein_file'            => ( is => 'ro', isa => 'Str',    lazy => 1, builder => '_build__input_protein_file' );
+has 'protein_file'            => ( is => 'ro', isa => 'Str',    lazy => 1, builder => '_build__protein_file' );
 has '_input_file_parser'      => ( is => 'ro', lazy => 1,       builder => '_build__input_file_parser' );
 has '_output_suffix'          => ( is => 'ro', isa => 'Str',    default  => '.out' );
 has 'use_lsf'                 => ( is => 'ro', isa => 'Bool',   default => 0 );
@@ -63,15 +66,15 @@ sub _build__temp_directory_name {
     return $self->_temp_directory_obj->dirname();
 }
 
-sub _build__input_protein_file {
+sub _build__protein_file {
   my ($self) = @_;
-  my $input_protein_file = $self->input_file;
+  my $protein_file = $self->input_file;
 
-  if ( $self->translation_table != 0 ) { 
-#    $input_protein_file = $self->_extract_proteins_from_gff; 
+  if ( $self->input_is_gff ) { 
+    $protein_file = $self->_extract_proteins_from_gff; 
   }
 
-  return $input_protein_file;
+  return $protein_file;
 }
 
 sub _build__input_file_parser {
@@ -81,6 +84,24 @@ sub _build__input_file_parser {
         -file     => $self->protein_file,
         -alphabet => 'protein'
     );
+}
+
+sub _extract_proteins_from_gff {
+  my ($self) = @_;
+
+  my $roary_obj = Bio::Roary::ExtractProteomeFromGFF->new(
+            gff_file              => $input_file,
+            apply_unknowns_filter => 0,
+            translation_table     => $self->translation_table
+  );
+
+  my $expected_output_file = join($input_file, ".proteome.faa");
+  my $extracted_protein_file = $roary_obj->fasta_file();
+
+  (-e $extracted_protein_file) or Bio::InterProScanWrapper::Exceptions::FileNotFound->throw(
+    error => "Couldn't find extracted proteins file: " . $expected_output_file );
+
+  return $extracted_protein_file;
 }
 
 sub _create_protein_file {
@@ -181,6 +202,8 @@ sub merge_results
   $merge_gff_files_obj->merge_files;
   $self->_delete_list_of_files($output_files);
   $self->_merge_proteins_into_gff( $self->protein_file, $self->output_filename );
+
+  if ( $self->translation_table != 0 &&  )
   
   remove_tree($temp_directory);
   return 1;
