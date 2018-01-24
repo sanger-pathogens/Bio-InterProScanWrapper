@@ -28,7 +28,7 @@ has 'translation_table'       => ( is => 'ro', isa => 'Int',    required => 1 );
 has 'cpus'                    => ( is => 'ro', isa => 'Int',    default  => 1 );
 has 'exec'                    => ( is => 'ro', isa => 'Str',    required => 1 );
 has 'output_filename'         => ( is => 'ro', isa => 'Str',    default  => 'iprscan_results.gff' );
-has 'protein_file'            => ( is => 'ro', isa => 'Str',    lazy => 1, builder => '_build__input_protein_file' ); );
+has 'protein_file'            => ( is => 'ro', isa => 'Str',    lazy => 1, builder => '_build__input_protein_file' );
 has '_protein_file_suffix'    => ( is => 'ro', isa => 'Str',    default  => '.seq' );
 has '_tmp_directory'          => ( is => 'ro', isa => 'Str',    default  => '/tmp' );
 has '_default_protein_files_per_cpu' => ( is => 'ro', isa => 'Int', default  => 20 );
@@ -67,10 +67,10 @@ sub _build__input_protein_file {
   my ($self) = @_;
   my $input_protein_file = $self->input_file;
 
-  if ( $translation_table != 0 ) { 
+  if ( $self->translation_table != 0 ) { 
 #    $input_protein_file = $self->_extract_proteins_from_gff; 
   }
-  
+
   return $input_protein_file;
 }
 
