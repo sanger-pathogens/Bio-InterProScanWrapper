@@ -28,7 +28,7 @@ has 'intermediate_output_dir'   => ( is => 'rw', isa => 'Maybe[Str]');
 
 sub BUILD {
     my ($self) = @_;
-    my ( $input_file, $is_gff, $tmp_directory, $help, $exec_script, $cpus, $output_filename, $no_lsf, $intermediate_output_dir );
+    my ( $input_file, $input_is_gff, $tmp_directory, $help, $exec_script, $cpus, $output_filename, $no_lsf, $intermediate_output_dir );
 
     GetOptionsFromArray(
         $self->args,
