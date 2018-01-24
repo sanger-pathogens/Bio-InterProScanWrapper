@@ -98,7 +98,7 @@ sub run {
     my $obj = Bio::InterProScanWrapper->new(
         input_file        => $self->input_file,
         translation_table => $self->translation_table,
-       input_is_gff       => $self->input_is_gff,
+        input_is_gff       => $self->input_is_gff,
         _tmp_directory    => $self->tmp_directory,
         cpus              => $self->cpus,
         exec              => $self->exec_script,

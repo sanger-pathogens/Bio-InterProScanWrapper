@@ -98,6 +98,9 @@ sub _extract_proteins_from_gff {
   my $expected_output_file = join($self->input_file, ".proteome.faa");
   my $extracted_protein_file = $roary_obj->fasta_file();
 
+  use Data::Dumper;
+  print Dumper($extracted_protein_file);
+
   (-e $extracted_protein_file) or Bio::InterProScanWrapper::Exceptions::FileNotFound->throw(
     error => "Couldn't find extracted proteins file: " . $expected_output_file );
 
