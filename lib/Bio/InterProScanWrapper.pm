@@ -90,12 +90,12 @@ sub _extract_proteins_from_gff {
   my ($self) = @_;
 
   my $roary_obj = Bio::Roary::ExtractProteomeFromGFF->new(
-            gff_file              => $input_file,
+            gff_file              => $self->input_file,
             apply_unknowns_filter => 0,
             translation_table     => $self->translation_table
   );
 
-  my $expected_output_file = join($input_file, ".proteome.faa");
+  my $expected_output_file = join($self->input_file, ".proteome.faa");
   my $extracted_protein_file = $roary_obj->fasta_file();
 
   (-e $extracted_protein_file) or Bio::InterProScanWrapper::Exceptions::FileNotFound->throw(
