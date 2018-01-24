@@ -65,11 +65,12 @@ sub _build__temp_directory_name {
 
 sub _build__input_protein_file {
   my ($self) = @_;
+  my $input_protein_file = $self->input_file;
+
   if ( $translation_table != 0 ) { 
 #    $input_protein_file = $self->_extract_proteins_from_gff; 
-  } else {
-    $input_protein_file = $self->input_file;
   }
+  
   return $input_protein_file;
 }
 
