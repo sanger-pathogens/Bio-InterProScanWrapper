@@ -24,11 +24,10 @@ use Bio::InterProScanWrapper::ParseInterProOutput;
 use Bio::InterProScanWrapper::External::LSFInterProScan;
 
 has 'input_file'              => ( is => 'ro', isa => 'Str',    required => 1 );
-has 'translation_table'       => ( is => 'ro', isa => 'Int',    required => 1 );
+has 'translation_table'       => ( is => 'ro', isa => 'Int',    default  => 0 );
 has 'cpus'                    => ( is => 'ro', isa => 'Int',    default  => 1 );
 has 'exec'                    => ( is => 'ro', isa => 'Str',    required => 1 );
 has 'output_filename'         => ( is => 'ro', isa => 'Str',    default  => 'iprscan_results.gff' );
-has 'protein_file'            => ( is => 'ro', isa => 'Str',    lazy => 1, builder => '_build__input_protein_file' );
 has '_protein_file_suffix'    => ( is => 'ro', isa => 'Str',    default  => '.seq' );
 has '_tmp_directory'          => ( is => 'ro', isa => 'Str',    default  => '/tmp' );
 has '_default_protein_files_per_cpu' => ( is => 'ro', isa => 'Int', default  => 20 );
@@ -36,6 +35,7 @@ has '_protein_files_per_cpu'  => ( is => 'ro', isa => 'Int',    lazy => 1, build
 has '_proteins_per_file'      => ( is => 'ro', isa => 'Int',    default  => 100 );
 has '_temp_directory_obj'     =>( is => 'ro', isa => 'File::Temp::Dir', lazy => 1, builder => '_build__temp_directory_obj' );
 has '_temp_directory_name'    => ( is => 'ro', isa => 'Str',    lazy => 1, builder => '_build__temp_directory_name' );
+has 'protein_file'            => ( is => 'ro', isa => 'Str',    lazy => 1, builder => '_build__input_protein_file' );
 has '_input_file_parser'      => ( is => 'ro', lazy => 1,       builder => '_build__input_file_parser' );
 has '_output_suffix'          => ( is => 'ro', isa => 'Str',    default  => '.out' );
 has 'use_lsf'                 => ( is => 'ro', isa => 'Bool',   default => 0 );
