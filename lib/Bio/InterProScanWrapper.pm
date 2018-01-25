@@ -18,6 +18,7 @@ use Moose;
 use File::Temp;
 use File::Path qw(remove_tree);
 use File::Copy;
+use File::Basename;
 use Bio::SeqIO;
 use Bio::Roary::ExtractProteomeFromGFF;
 use Bio::InterProScanWrapper::External::ParallelInterProScan;
@@ -95,14 +96,14 @@ sub _create_protein_fasta_file_from_gff {
             gff_file              => $self->input_file,
             apply_unknowns_filter => 0,
             translation_table     => $self->translation_table,
-            output_filename       => $self->input_file . $self->_gff_protein_file_suffix
+            output_filename       => $self->input_file . $self->_gff_protein_file_suffix,
   );
   $roary_obj->fasta_file();
 
   my $exected_protein_fasta_file = $self->_input_protein_filename;
   (-e $exected_protein_fasta_file) or Bio::InterProScanWrapper::Exceptions::FileNotFound->throw(
     error => "Couldn't find extracted proteins file: " . $exected_protein_fasta_file );
-
+  
   return 1;
 }
 

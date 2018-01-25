@@ -94,7 +94,6 @@ sub merge_results
 sub run {
     my ($self) = @_;
     ( ( -e $self->input_file ) && !$self->help ) or die $self->usage_text;
-
     my $obj = Bio::InterProScanWrapper->new(
         input_file        => $self->input_file,
         translation_table => $self->translation_table,

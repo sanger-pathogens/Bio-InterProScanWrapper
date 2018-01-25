@@ -22,6 +22,15 @@ ok($obj = Bio::InterProScanWrapper->new(
 ),'Initialise object');
 ok($obj->annotate, 'run a mocked interproscan');
 
+copy('t/data/input_annotation.gff','input_annotation.gff');
+ok($obj = Bio::InterProScanWrapper->new(
+  input_file          => 'input_annotation.gff',
+  input_is_gff	      => 1,
+  translation_table   => 11,
+  exec                => $cwd.'/t/bin/dummy_interproscan',
+),'Initialise object');
+ok($obj->annotate, 'run a mocked interproscan');
+
 ok($obj = Bio::InterProScanWrapper->new(
   input_file   => $cwd.'/t/data/input_proteins.faa',
   exec             => $cwd.'/t/bin/dummy_interproscan',
