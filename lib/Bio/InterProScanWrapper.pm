@@ -103,7 +103,7 @@ sub _create_protein_fasta_file_from_gff {
   my $extracted_protein_file = $roary_obj->fasta_file();
 
   (-e $extracted_protein_file) or Bio::InterProScanWrapper::Exceptions::FileNotFound->throw(
-    error => "Couldn't find extracted proteins file: " . $expected_output_file );
+    error => "Couldn't find extracted proteins file: " . $exected_protein_fasta_file );
 
   return 1;
 }
