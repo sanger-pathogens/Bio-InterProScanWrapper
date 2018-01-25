@@ -41,7 +41,7 @@ has '_proteins_per_file'        => ( is => 'ro', isa => 'Int',    default  => 10
 has '_temp_directory_obj'       =>( is => 'ro', isa => 'File::Temp::Dir', lazy => 1, builder => '_build__temp_directory_obj' );
 has '_temp_directory_name'      => ( is => 'ro', isa => 'Str',    lazy => 1, builder => '_build__temp_directory_name' );
 has '_input_protein_filename'   => ( is => 'ro', isa => 'Str',    lazy => 1, builder => '_build__input_protein_filename' );
-has '_gff_protein_file_suffix'  => ( is => 'rw', isa => 'Str',    default => 'proteome.faa' );
+has '_gff_protein_file_suffix'  => ( is => 'rw', isa => 'Str',    default => '.proteome.faa' );
 has '_input_file_parser'        => ( is => 'ro', lazy => 1,       builder => '_build__input_file_parser' );
 has '_output_suffix'            => ( is => 'ro', isa => 'Str',    default  => '.out' );
 has 'use_lsf'                   => ( is => 'ro', isa => 'Bool',   default => 0 );
@@ -74,7 +74,7 @@ sub _build__input_protein_filename {
 
   my $protein_filename = $self->input_file;
   if ( $self->input_is_gff ) {
-    $protein_filename = join( '.', $self->input_file, $self->_gff_protein_file_suffix ) ; 
+    $protein_filename = $self->input_file . $self->_gff_protein_file_suffix; 
   }
   return $protein_filename;
 }
@@ -95,14 +95,12 @@ sub _create_protein_fasta_file_from_gff {
             gff_file              => $self->input_file,
             apply_unknowns_filter => 0,
             translation_table     => $self->translation_table,
-            output_directory      => '.',
-            output_suffix         => '.proteome.faa'
+            output_filename       => $self->input_file . $self->_gff_protein_file_suffix
   );
+  $roary_obj->fasta_file();
 
   my $exected_protein_fasta_file = $self->_input_protein_filename;
-  my $extracted_protein_file = $roary_obj->fasta_file();
-
-  (-e $extracted_protein_file) or Bio::InterProScanWrapper::Exceptions::FileNotFound->throw(
+  (-e $exected_protein_fasta_file) or Bio::InterProScanWrapper::Exceptions::FileNotFound->throw(
     error => "Couldn't find extracted proteins file: " . $exected_protein_fasta_file );
 
   return 1;
