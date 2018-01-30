@@ -36,7 +36,6 @@ sub _build__paropts {
 sub _cmd 
 {
   my ($self) = @_;
-  #my $paropts = $self->cpus > 0 ? " -j " . $self->cpus : "";
   my $cmd = join(
       ' ',
       (
@@ -71,13 +70,7 @@ sub _run_merge_cmd {
 }
 
 sub run {
-    my ($self) = @_;
-#    my $cmd = $self->_cmd;
-#    system($cmd);
-    
-#    my $merge_cmd = $self->_create_merge_cmd;
-#    `$merge_cmd`;
-
+   my ($self) = @_;
    $self->_run_interproscan_cmd;
    $self->_run_merge_cmd;
     

@@ -41,7 +41,7 @@ ok($obj->run, 'run the command to see if the mock is working as expected');
 
 compare_ok(
     $cwd . '/t/data/input_proteins.faa.iprscan.gff',
-    't/data/expected_input_proteins.faa.iprscan.gff', 
+    't/data/dummy_merged_annotation.gff', 
     'got expected iprscal output'
 );
 
