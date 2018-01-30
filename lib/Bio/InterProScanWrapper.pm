@@ -39,6 +39,7 @@ has '_tmp_directory'            => ( is => 'ro', isa => 'Str',    default  => '/
 has '_default_protein_files_per_cpu' => ( is => 'ro', isa => 'Int', default  => 20 );
 has '_protein_files_per_cpu'    => ( is => 'ro', isa => 'Int',    lazy => 1, builder => '_build__protein_files_per_cpu' );
 has '_proteins_per_file'        => ( is => 'ro', isa => 'Int',    default  => 100 );
+#has '_proteins_per_file'        => ( is => 'ro', isa => 'Int',    default  => 10 );
 has '_temp_directory_obj'       =>( is => 'ro', isa => 'File::Temp::Dir', lazy => 1, builder => '_build__temp_directory_obj' );
 has '_temp_directory_name'      => ( is => 'ro', isa => 'Str',    lazy => 1, builder => '_build__temp_directory_name' );
 has '_input_protein_filename'   => ( is => 'ro', isa => 'Str',    lazy => 1, builder => '_build__input_protein_filename' );
