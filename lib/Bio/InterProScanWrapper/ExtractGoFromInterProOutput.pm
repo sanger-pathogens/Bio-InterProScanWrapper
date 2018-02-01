@@ -7,10 +7,11 @@ extract GO terms from the InterProScan GFF output
    use Bio::InterProScanWrapper::ExtractGoFromInterProOutput;
    
    my $obj = Bio::InterProScanWrapper::ExtractGoFromInterProOutput->new(
-     iprscan_file  => 'iprscan_results.gff',
-     output_file   => 'iprscan_results.gff.go.tsv',
-     summary_file  => 'iprscan_results.gff.go.summary.tsv'
-     gff_to_extend => 'prokka.out.gff'
+     iprscan_file      => 'iprscan_results.gff',
+     output_file       => 'iprscan_results.gff.go.tsv',
+     summary_file      => 'iprscan_results.gff.go.summary.tsv',
+     gff_to_extend     => 'prokka.out.gff',
+     ontology_database => '/lustre/scratch118/infgen/pathdev/vo1/gene_ontology.obo'
    );
    $obj->merge_files;
 =cut
@@ -18,13 +19,24 @@ extract GO terms from the InterProScan GFF output
 use Moose;
 use Bio::InterProScanWrapper::Exceptions;
 use Bio::Tools::GFF;
+use GO::Parser;
 use List::MoreUtils qw(uniq);
 use Data::Dumper;
 
-has 'iprscan_file'        => ( is => 'ro', isa => 'Str', required => 1 );
-has 'output_filename'     => ( is => 'ro', isa => 'Str', default => 'iprscan_results.gff.go.tsv' );
-has 'summary_filename'    => ( is => 'ro', isa => 'Str', default => 'iprscan_results.gff.go.summary.tsv' );
-has 'gff_to_extend'       => ( is => 'ro', isa => 'Str|Undef', required => 0 );
+has 'iprscan_file'       => ( is => 'ro', isa => 'Str',              required => 1 );
+has 'output_filename'    => ( is => 'ro', isa => 'Str',              default => 'iprscan_results.gff.go.tsv' );
+has 'summary_filename'   => ( is => 'ro', isa => 'Str',              default => 'iprscan_results.gff.go.summary.tsv' );
+has 'gff_to_extend'      => ( is => 'ro', isa => 'Str|Undef',        required => 0 );
+has 'ontology_database'  => ( is => 'ro', isa => 'Str',              default => '/lustre/scratch118/infgen/pathdev/vo1/gene_ontology.obo' );
+has 'graph_obj'          => ( is => 'ro', isa => 'GO::Model::Graph', lazy => 1, builder => '__build_ontology_parser' );
+
+sub __build_ontology_parser {
+  my ($self) = @_;
+  my $parser = new GO::Parser({handler=>'obj'});
+  $parser->parse($self->ontology_database);
+  my $graph = $parser->handler->graph;
+  return $graph;
+}
 
 sub _extract_ontology_terms {
   my ($self) = @_;
@@ -70,14 +82,19 @@ sub _write_go_terms_to_tsv {
 }
 
 sub _count_go_term_occurence {
+  my ($self) = @_;
   my $ontology_terms = $_[1];
   my %ontology_counts;
   foreach my $seq_id ( keys %{ $ontology_terms } ) {
-    foreach my $go_term ( @{ $ontology_terms->{$seq_id} } ) {
-      if ( exists $ontology_counts{$go_term} ) {
-        $ontology_counts{$go_term}++;
+    foreach my $go_id ( @{ $ontology_terms->{$seq_id} } ) {
+      $go_id =~ s/\"//g;
+      if ( exists $ontology_counts{$go_id} ) {
+        $ontology_counts{$go_id}->{'count'}++;
       } else {
-        $ontology_counts{$go_term} = 1;
+        my $term = $self->graph_obj->get_term($go_id);
+        $ontology_counts{$go_id}->{'count'} = 1;
+        $ontology_counts{$go_id}->{'name'} = $term->name;
+        $ontology_counts{$go_id}->{'namespace'} = $term->namespace;
       }
     }
   }
@@ -87,8 +104,14 @@ sub _count_go_term_occurence {
 sub _write_go_term_summary {
   my ($self) = @_;
   my $ontology_terms_to_summarise = $_[1];
-  my $ontology_term_counts = $self->_count_go_term_occurence($ontology_terms_to_summarise);
-  print Dumper($ontology_term_counts);
+  
+  my $ontology_term_counts = $self->_count_go_term_occurence($ontology_terms_to_summarise);   
+  open(my $GO_SUMMARY, '>', $self->summary_filename) or Bio::InterProScanWrapper::Exceptions::CouldntWriteToFile->throw (
+    error => "Couldn't write GO terms counts to summary file: " . $self->summary_filename );
+  foreach my $go_id (reverse sort { $ontology_term_counts->{$a}->{'count'} <=> $ontology_term_counts->{$b}->{'count'} } keys %{$ontology_term_counts}) {
+    print $GO_SUMMARY join("\t", $go_id, $ontology_term_counts->{$go_id}->{'count'}, $ontology_term_counts->{$go_id}->{'name'}, $ontology_term_counts->{$go_id}->{'namespace'});
+  }
+  close($GO_SUMMARY);
 }
 
 sub run {
