@@ -12,35 +12,40 @@ use Cwd;
 use File::Basename;
 use Bio::InterProScanWrapper::ExtractGoFromInterProOutput;
 
-has 'args'                   => ( is => 'ro', isa => 'ArrayRef', required => 1 );
-has 'script_name'            => ( is => 'ro', isa => 'Str',      required => 1 );
-has 'help'                   => ( is => 'rw', isa => 'Bool',     default => 0 );
-has 'iprscan_file'           => ( is => 'rw', isa => 'Str' );
-has 'gff_to_extend'          => ( is => 'rw', isa => 'Str' );
-has 'output_filename'        => ( is => 'rw', isa => 'Str',      lazy => 1, builder => '_build_output_filename' );
-has 'summary_filename'       => ( is => 'rw', isa => 'Str',      lazy => 1, builder => '_build_summary_filename' );
+has 'args'              => ( is => 'ro', isa => 'ArrayRef',  required => 1 );
+has 'script_name'       => ( is => 'ro', isa => 'Str',       required => 1 );
+has 'help'              => ( is => 'rw', isa => 'Bool',      default => 0 );
+has 'iprscan_file'      => ( is => 'rw', isa => 'Str', );
+has 'gff_file'          => ( is => 'rw', isa => 'Str|Undef' );
+has 'ontology_database' => ( is => 'rw', isa => 'Str',       default => $ENV{GO_OBO} );
+has '_output_filename'   => ( is => 'rw', isa => 'Str',       lazy => 1, builder => '_build__output_filename' );
+has '_summary_filename'  => ( is => 'rw', isa => 'Str',       lazy => 1, builder => '_build__summary_filename' );
+has '_gff_filename'      => ( is => 'rw', isa => 'Str|Undef', lazy => 1, builder => '_build__gff_filename' );
 
 sub BUILD {
   my ($self) = @_;
-  my ($iprscan_file, $gff_to_extend, $output_filename, $summary_filename, $help);
+  my ($iprscan_file, $gff_file, $ontology_database, $output_filename, $summary_filename, $gff_filename, $help);
 
   GetOptionsFromArray(
     $self->args,
     'i|iprscan_file=s'      => \$iprscan_file,
-    'e|gff_to_extend=s'     => \$gff_to_extend,
+    'e|gff_file=s'          => \$gff_file,
+    'd|ontology_database=s' => \$ontology_database,
     'o|output_filename=s'   => \$output_filename,
     's|summary_filename=s'  => \$summary_filename,
+    'g|gff_filename=s'      => \$gff_filename,
     'h|help'                => \$help,
   );
 
-  $self->gff_to_extend($gff_to_extend) if ( defined($gff_to_extend) );
   $self->iprscan_file($iprscan_file) if ( defined($iprscan_file) );
-  $self->output_filename($output_filename) if ( defined($output_filename) );
-  $self->summary_filename($summary_filename) if ( defined($summary_filename) );
+  $self->gff_file($gff_file) if ( defined($gff_file) );
+  $self->ontology_database($ontology_database) if ( defined($ontology_database) );
+  $self->_output_filename($output_filename) if ( defined($output_filename) );
+  $self->_summary_filename($summary_filename) if ( defined($summary_filename) );
+  $self->_gff_filename($gff_filename) if ( defined($gff_filename) );
 }
 
-sub _build_output_filename
-{
+sub _build__output_filename {
   my ($self) = @_;
   my $output_suffix = '.go.tsv';
   my($filename, $directories, $suffix) = fileparse($self->iprscan_file);
@@ -48,13 +53,23 @@ sub _build_output_filename
   return $output_filename;
 }
 
-sub _build_summary_filename
-{
+sub _build__summary_filename {
   my ($self) = @_;
   my $summary_suffix = '.go.summary.tsv';
   my($filename, $directories, $suffix) = fileparse($self->iprscan_file);
   my $summary_filename = getcwd().'/'.$filename.$summary_suffix ;
   return $summary_filename;
+}
+
+sub _build__gff_filename {
+  my ($self) = @_;
+  my $gff_suffix = '.go.gff';
+  my $gff_filename;
+  if (defined $self->gff_file) {
+    my($filename, $directories, $suffix) = fileparse($self->gff_file);
+    $gff_filename = getcwd().'/'.$filename.$gff_suffix if (defined $self->gff_file) ;
+  }
+  return $gff_filename;
 }
 
 sub run {
@@ -63,11 +78,12 @@ sub run {
 
   my $obj = Bio::InterProScanWrapper::ExtractGoFromInterProOutput->new(
         iprscan_file      => $self->iprscan_file,
-        output_filename   => $self->output_filename,
-        summary_filename  => $self->summary_filename,
-        gff_to_extend     => $self->gff_to_extend,
+        gff_file          => $self->gff_file,
+        output_filename   => $self->_output_filename,
+        summary_filename  => $self->_summary_filename,
+        gff_filename      => $self->_gff_filename,
     );
-  $obj->run;  
+  $obj->run;
 }
 
 sub usage_text {
