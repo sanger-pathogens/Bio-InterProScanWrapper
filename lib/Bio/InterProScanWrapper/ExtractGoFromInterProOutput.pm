@@ -159,10 +159,10 @@ sub _add_go_terms_to_gff {
   while(my $feature = $gffio->next_feature ) {
     my $feature_id = [$feature->get_tag_values('ID')]->[0];
     if (exists $ontology_terms->{ $feature_id } ) {
-#      print Dumper($feature);
-      $feature->add_tag_value( 'ontology_term', $ontology_terms->{ $feature_id } );
-#      print Dumper($feature);
-      print $gff_output_fh $feature->gff_string;
+      my @ontology_terms_to_add = @{$ontology_terms->{ $feature_id }};
+      @ontology_terms_to_add = map "\"$ontology_terms_to_add[$_]\"", 0..$#ontology_terms_to_add; # escape quotes as gff_string removes them
+      $feature->add_tag_value( 'Ontology_term', @ontology_terms_to_add );
+      print $gff_output_fh $gffio->gff_string($feature);
     }
   }
 
