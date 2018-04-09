@@ -28,24 +28,27 @@ use Bio::InterProScanWrapper::Exceptions;
 use Bio::InterProScanWrapper::ExtractGoFromInterProOutput;
 use Data::Dumper;
 
-has 'input_file'                => ( is => 'ro', isa => 'Str',    required => 1 );
-has 'translation_table'         => ( is => 'ro', isa => 'Int',    default  => 1 );
-has 'input_is_gff'              => ( is => 'ro', isa => 'Bool',   default  => 0 );
-has 'cpus'                      => ( is => 'ro', isa => 'Int',    default  => 1 );
-has 'exec'                      => ( is => 'ro', isa => 'Str',    required => 1 );
-has 'output_filename'           => ( is => 'ro', isa => 'Str',    default  => 'iprscan_results.gff' );
-has '_protein_file_suffix'      => ( is => 'ro', isa => 'Str',    default  => '.seq' );
-has '_tmp_directory'            => ( is => 'ro', isa => 'Str',    default  => '/tmp' );
+has 'input_file'                  => ( is => 'ro', isa => 'Str',    required => 1 );
+has 'input_is_gff'                => ( is => 'ro', isa => 'Bool',   default  => 0 );
+has 'translation_table'           => ( is => 'ro', isa => 'Int',    default  => 1 );
+has 'cpus'                        => ( is => 'ro', isa => 'Int',    default  => 1 );
+has 'exec'                        => ( is => 'ro', isa => 'Str',    required => 1 );
+has 'output_filename'             => ( is => 'ro', isa => 'Str',    default  => 'iprscan_results.gff' );
+
+has '_input_protein_filename'  => ( is => 'ro', isa => 'Str',    lazy => 1, builder => '_build__input_protein_filename' );
+
+has '_tmp_directory'              => ( is => 'ro', isa => 'Str',    default  => '/tmp' );
+has '_temp_directory_obj'         =>( is => 'ro', isa => 'File::Temp::Dir', lazy => 1, builder => '_build__temp_directory_obj' );
+has '_temp_directory_name'        => ( is => 'ro', isa => 'Str',    lazy => 1, builder => '_build__temp_directory_name' );
+
+has '_protein_file_suffix'        => ( is => 'ro', isa => 'Str',    default  => '.seq' );
+has '_proteins_per_file'          => ( is => 'ro', isa => 'Int',    default  => 100 );
 has '_default_protein_files_per_cpu' => ( is => 'ro', isa => 'Int', default  => 20 );
-has '_protein_files_per_cpu'    => ( is => 'ro', isa => 'Int',    lazy => 1, builder => '_build__protein_files_per_cpu' );
-has '_proteins_per_file'        => ( is => 'ro', isa => 'Int',    default  => 100 );
-has '_temp_directory_obj'       =>( is => 'ro', isa => 'File::Temp::Dir', lazy => 1, builder => '_build__temp_directory_obj' );
-has '_temp_directory_name'      => ( is => 'ro', isa => 'Str',    lazy => 1, builder => '_build__temp_directory_name' );
-has '_input_protein_filename'   => ( is => 'ro', isa => 'Str',    lazy => 1, builder => '_build__input_protein_filename' );
-has '_gff_protein_file_suffix'  => ( is => 'rw', isa => 'Str',    default => '.proteome.faa' );
-has '_input_file_parser'        => ( is => 'ro', lazy => 1,       builder => '_build__input_file_parser' );
-has '_output_suffix'            => ( is => 'ro', isa => 'Str',    default  => '.out' );
-has 'use_lsf'                   => ( is => 'ro', isa => 'Bool',   default => 0 );
+has '_protein_files_per_cpu'      => ( is => 'ro', isa => 'Int',    lazy => 1, builder => '_build__protein_files_per_cpu' );
+has '_input_file_parser'          => ( is => 'ro', lazy => 1,       builder => '_build__input_file_parser' );
+
+has '_output_suffix'              => ( is => 'ro', isa => 'Str',    default  => '.out' );
+has 'use_lsf'                     => ( is => 'ro', isa => 'Bool',   default => 0 );
 
 sub _build__protein_files_per_cpu
 {
@@ -75,7 +78,7 @@ sub _build__input_protein_filename {
 
   my $protein_filename = $self->input_file;
   if ( $self->input_is_gff ) {
-    $protein_filename = $self->input_file . $self->_gff_protein_file_suffix; 
+    $protein_filename = $self->input_file . ".proteome.faa"; 
   }
   return $protein_filename;
 }
@@ -96,7 +99,7 @@ sub _create_protein_fasta_file_from_gff {
             gff_file              => $self->input_file,
             apply_unknowns_filter => 0,
             translation_table     => $self->translation_table,
-            output_filename       => $self->input_file . $self->_gff_protein_file_suffix,
+            output_filename       => $self->_input_protein_filename,
   );
   $roary_obj->fasta_file();
 
@@ -174,9 +177,11 @@ sub annotate {
   
         # split over multiple hosts with LSF
         $job_runner = Bio::InterProScanWrapper::External::LSFInterProScan->new(
-            input_files         => $protein_files,
+            input_file          => $self->input_file,
+            input_is_gff        => $self->input_is_gff,
+            protein_file        => $self->_input_protein_filename,
+            protein_files       => $protein_files,
             exec                => $self->exec,
-            input_file          => $self->_input_protein_filename,
             output_file         => $self->output_filename,
             temp_directory_name => $self->_temp_directory_name
         );
@@ -184,15 +189,19 @@ sub annotate {
     else {
         # Run on a single host with parallel
         $job_runner = Bio::InterProScanWrapper::External::ParallelInterProScan->new(
-            input_files_path    => join( '/', ( $self->_temp_directory_name, '*' . $self->_protein_file_suffix ) ),
+            input_file          => $self->input_file,
+            input_is_gff        => $self->input_is_gff,
+            protein_file        => $self->_input_protein_filename,
+            protein_files_path  => join( '/', ( $self->_temp_directory_name, '*' . $self->_protein_file_suffix ) ),
             exec                => $self->exec,
             cpus                => $self->cpus,
-            input_file          => $self->_input_protein_filename,
             output_file         => $self->output_filename,
             temp_directory_name => $self->_temp_directory_name
         );
     }
     $job_runner->run;
+
+    $self->_delete_intermediate_protein_file if ( $self->input_is_gff );
 
     return $self;
 }
@@ -249,20 +258,6 @@ sub _merge_block_results_with_final {
         move( $intermediate_filename, $self->output_filename );
     }
     return 1;
-}
-
-sub extract_iprscan_go_terms_to_input_gff {
-  my ( $self ) = @_;
- 
-  my $obj = Bio::InterProScanWrapper::ExtractGoFromInterProOutput->new(
-        iprscan_file => $self->output_filename,
-        gff_file     => $self->input_file,
-    );
-  $obj->run;  
-  
-  $self->_delete_intermediate_protein_file;
-
-  return 1;
 }
 
 no Moose;
