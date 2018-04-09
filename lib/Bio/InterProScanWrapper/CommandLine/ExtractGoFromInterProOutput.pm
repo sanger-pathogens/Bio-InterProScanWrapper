@@ -18,9 +18,9 @@ has 'help'              => ( is => 'rw', isa => 'Bool',      default => 0 );
 has 'iprscan_file'      => ( is => 'rw', isa => 'Str', );
 has 'gff_file'          => ( is => 'rw', isa => 'Str|Undef' );
 has 'ontology_database' => ( is => 'rw', isa => 'Str',       default => $ENV{GO_OBO} );
-has '_output_filename'   => ( is => 'rw', isa => 'Str',       lazy => 1, builder => '_build__output_filename' );
-has '_summary_filename'  => ( is => 'rw', isa => 'Str',       lazy => 1, builder => '_build__summary_filename' );
-has '_gff_filename'      => ( is => 'rw', isa => 'Str|Undef', lazy => 1, builder => '_build__gff_filename' );
+has '_output_filename'  => ( is => 'rw', isa => 'Str',       lazy => 1, builder => '_build__output_filename' );
+has '_summary_filename' => ( is => 'rw', isa => 'Str',       lazy => 1, builder => '_build__summary_filename' );
+has '_gff_filename'     => ( is => 'rw', isa => 'Str|Undef', lazy => 1, builder => '_build__gff_filename' );
 
 sub BUILD {
   my ($self) = @_;
@@ -95,16 +95,16 @@ sub usage_text {
     Extract GO terms from Interproscan GFF output file.
   
     # Run using default settings 
-    iprscan_extract_go_terms -i iprscan_results.gff 
+    extract_go_from_interpro_output -i iprscan_results.gff 
 
     # Provide an output file name for tab-delimited id:go mapping
-    iprscan_extract_go_terms -i iprscan_results.gff -o iprscan_go_terms.tsv
+    extract_go_from_interpro_output -i iprscan_results.gff -o iprscan_go_terms.tsv
  
     # Add extracted GO terms to another GFF (e.g. PROKKA output)
-    iprscan_extract_go_terms -i iprscan_results.gff -e prokka.out.gff
+    extract_go_from_interpro_output -i iprscan_results.gff -e prokka.out.gff
 
     # This help message
-    iprscan_extract_go_terms -h
+    extract_go_from_interpro_output -h
 USAGE
 }
 

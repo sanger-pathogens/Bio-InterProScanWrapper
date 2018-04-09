@@ -25,7 +25,7 @@ use Bio::InterProScanWrapper::External::ParallelInterProScan;
 use Bio::InterProScanWrapper::ParseInterProOutput;
 use Bio::InterProScanWrapper::External::LSFInterProScan;
 use Bio::InterProScanWrapper::Exceptions;
-
+use Bio::InterProScanWrapper::ExtractGoFromInterProOutput;
 use Data::Dumper;
 
 has 'input_file'                => ( is => 'ro', isa => 'Str',    required => 1 );
@@ -193,7 +193,7 @@ sub annotate {
         );
     }
     $job_runner->run;
-  
+
     return $self;
 }
 
@@ -204,7 +204,7 @@ sub merge_results
 
   # delete intermediate input files where there is 1 protein per file
   # move to separate cleanup job (ended)
-
+  die("WARNING");
   my $output_files        = $self->_expected_output_files($temp_directory);
   my $merge_gff_files_obj = Bio::InterProScanWrapper::ParseInterProOutput->new(
       gff_files   => $output_files,
@@ -213,8 +213,7 @@ sub merge_results
   );
   $merge_gff_files_obj->merge_files;
   $self->_delete_list_of_files($output_files);
-  $self->_merge_proteins_into_gff( $self->_input_protein_filename, $self->output_filename );
-  $self->_delete_intermediate_protein_file if ( $self->input_is_gff );
+  $self->_merge_proteins_into_gff( $self->input_file, $self->output_filename );
   
   remove_tree($temp_directory);
   return 1;
@@ -250,6 +249,18 @@ sub _merge_block_results_with_final {
         move( $intermediate_filename, $self->output_filename );
     }
     return 1;
+}
+
+sub add_go_terms_to_input_gff {
+  my ( $self ) = @_;
+ 
+  my $obj = Bio::InterProScanWrapper::ExtractGoFromInterProOutput->new(
+        iprscan_file => $self->output_filename,
+        gff_file     => $self->input_file,
+    );
+  $obj->run;  
+
+  return 1;
 }
 
 no Moose;

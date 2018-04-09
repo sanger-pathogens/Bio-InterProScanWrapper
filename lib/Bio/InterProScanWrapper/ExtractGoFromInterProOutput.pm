@@ -97,7 +97,7 @@ sub _write_go_terms_to_tsv {
   foreach my $seq_id ( keys %{ $ontology_terms_to_write } ) {
     my $ontology_term_string = join( ";", @{ $ontology_terms_to_write->{$seq_id} } );
     $ontology_term_string =~ s/\"//g;
-    print {$self->_output_fh} join("\t", $seq_id, $ontology_term_string);
+    print {$self->_output_fh} join("\t", $seq_id, $ontology_term_string) . "\n";
   }
   close($self->_output_fh);
   return 1;
@@ -135,9 +135,9 @@ sub _write_go_term_summary {
   my $ontology_term_counts = $self->_count_go_term_occurence($ontology_terms_to_summarise);   
   foreach my $go_id (reverse sort { $ontology_term_counts->{$a}->{'count'} <=> $ontology_term_counts->{$b}->{'count'} } keys %{$ontology_term_counts}) {
     if ( exists $ontology_term_counts->{$go_id}->{'name'} && exists $ontology_term_counts->{$go_id}->{'namespace'}) {
-      print {$self->_summary_fh} join("\t", $go_id, $ontology_term_counts->{$go_id}->{'count'}, $ontology_term_counts->{$go_id}->{'name'}, $ontology_term_counts->{$go_id}->{'namespace'});
+      print {$self->_summary_fh} join("\t", $go_id, $ontology_term_counts->{$go_id}->{'count'}, $ontology_term_counts->{$go_id}->{'name'}, $ontology_term_counts->{$go_id}->{'namespace'}) . "\n";
     } else {
-      print {$self->_summary_fh} join("\t", $go_id, $ontology_term_counts->{$go_id}->{'count'});
+      print {$self->_summary_fh} join("\t", $go_id, $ontology_term_counts->{$go_id}->{'count'}) . "\n";
     }
   }
   close($self->_summary_fh);
@@ -150,10 +150,10 @@ sub _add_go_terms_to_gff {
       error => "Couldn't write extended GFF: " . $self->gff_filename );
 
   my $gffio = Bio::Tools::GFF->new( -file => $self->gff_file, -gff_version => 3 );
-  print $gff_output_fh join(" ", "##gff-version", $gffio->gff_version);
+  print $gff_output_fh join(" ", "##gff-version", $gffio->gff_version) . "\n";
 
   while (my $segment = $gffio->next_segment ) {
-    print $gff_output_fh join(" ", "##sequence-region", $segment->id, $segment->start, $segment->end);
+    print $gff_output_fh join(" ", "##sequence-region", $segment->id, $segment->start, $segment->end) . "\n";
   }  
 
   while(my $feature = $gffio->next_feature ) {
@@ -162,7 +162,7 @@ sub _add_go_terms_to_gff {
       my @ontology_terms_to_add = @{$ontology_terms->{ $feature_id }};
       @ontology_terms_to_add = map "\"$ontology_terms_to_add[$_]\"", 0..$#ontology_terms_to_add; # escape quotes as gff_string removes them
       $feature->add_tag_value( 'Ontology_term', @ontology_terms_to_add );
-      print $gff_output_fh $gffio->gff_string($feature);
+      print $gff_output_fh $gffio->gff_string($feature) . "\n";
     }
   }
 
@@ -178,7 +178,7 @@ sub run {
   my $extracted_ontology_terms = $self->_extract_ontology_terms;
   $self->_write_go_terms_to_tsv($extracted_ontology_terms);  
   $self->_write_go_term_summary($extracted_ontology_terms);
-  $self->_add_go_terms_to_gff($extracted_ontology_terms);
+  $self->_add_go_terms_to_gff($extracted_ontology_terms) if (defined $self->gff_file);
 }
 
 

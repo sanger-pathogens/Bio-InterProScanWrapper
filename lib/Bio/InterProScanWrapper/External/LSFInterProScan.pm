@@ -21,17 +21,17 @@ use LSF::JobManager;
 use File::Basename;
 use Bio::InterProScanWrapper::Exceptions;
 
-has 'input_file'          => ( is => 'ro', isa => 'Str',        required => 1);
+has 'input_file'          => ( is => 'ro', isa => 'Str',	required => 1);
 has 'output_file'         => ( is => 'ro', isa => 'Str',        required => 1);
 has 'temp_directory_name' => ( is => 'ro', isa => 'Str',        required => 1);
-has 'input_files'         => ( is => 'ro', isa => 'ArrayRef',        required => 1 );
-has 'memory_in_mb'        => ( is => 'ro', isa => 'Int',             default  => 8000 );
-has 'queue'               => ( is => 'ro', isa => 'Str',             default  => 'normal' );
+has 'input_files'         => ( is => 'ro', isa => 'ArrayRef',   required => 1 );
+has 'memory_in_mb'        => ( is => 'ro', isa => 'Int',        default  => 8000 );
+has 'queue'               => ( is => 'ro', isa => 'Str',        default  => 'normal' );
 has '_job_manager'        => ( is => 'ro', isa => 'LSF::JobManager', lazy     => 1, builder => '_build__job_manager' );
-has 'exec'                => ( is => 'ro', isa => 'Str', default  => '/software/pathogen/external/apps/usr/local/interproscan-5.25-64.0/interproscan.sh' );
-has 'output_type'         => ( is => 'ro', isa => 'Str', default => 'gff3' );
-has '_output_suffix'      => ( is => 'ro', isa => 'Str', default  => '.out' );
-has 'tokens_per_job'      => ( is => 'ro', isa => 'Int', default  => 25 );
+has 'exec'                => ( is => 'ro', isa => 'Str', 	default  => '/software/pathogen/external/apps/usr/local/interproscan-5.28-67.0/interproscan.sh' );
+has 'output_type'         => ( is => 'ro', isa => 'Str', 	default => 'gff3' );
+has '_output_suffix'      => ( is => 'ro', isa => 'Str', 	default  => '.out' );
+has 'tokens_per_job'      => ( is => 'ro', isa => 'Int', 	default  => 25 );
 
                           
 # A single instance uses more than 1 cpu so you need to reserve more slots
