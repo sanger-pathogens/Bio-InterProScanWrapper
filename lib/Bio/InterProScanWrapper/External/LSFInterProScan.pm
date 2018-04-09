@@ -104,8 +104,11 @@ sub run {
       push(@submitted_job_ids, $submitted_job->id);
     }
     
-    my $dependancy_params =  $self->_construct_dependancy_params(\@submitted_job_ids);
-    $self->_submit_merge_job($dependancy_params);
+    my $merge_dependancy_params =  $self->_construct_dependancy_params(\@submitted_job_ids);
+    $self->_submit_merge_job($merge_dependancy_params);
+
+    my $go_extraction_dependancy_params =  $self->_construct_dependancy_params(\@submitted_job_ids);
+    $self->_submit_go_extraction_job($go_extraction_dependancy_params);
 
     1;
 }
@@ -129,6 +132,24 @@ sub _create_merge_cmd
    return $command;
 }
 
+sub _submit_go_extraction_job {
+    my ( $self,$dependancy_params) = @_;
+    $self->_job_manager->submit(
+        -o => ".iprscan.o",
+        -e => ".iprscan.e",
+        -M => $self->memory_in_mb,
+        -R => $self->_generate_memory_parameter,
+        -w => $dependancy_params,
+        $self->_create_go_extraction_cmd
+    );
+}
+
+sub _create_go_extraction_cmd
+{
+   my ($self) = @_;
+   my $command = join(' ',('extract_interproscan_go_terms', '-i', $self->output_file));
+   return $command;
+}
 
 no Moose;
 __PACKAGE__->meta->make_immutable;

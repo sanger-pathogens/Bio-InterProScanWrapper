@@ -251,7 +251,7 @@ sub _merge_block_results_with_final {
     return 1;
 }
 
-sub add_go_terms_to_input_gff {
+sub extract_iprscan_go_terms_to_input_gff {
   my ( $self ) = @_;
  
   my $obj = Bio::InterProScanWrapper::ExtractGoFromInterProOutput->new(
@@ -259,6 +259,8 @@ sub add_go_terms_to_input_gff {
         gff_file     => $self->input_file,
     );
   $obj->run;  
+  
+  $self->_delete_intermediate_protein_file;
 
   return 1;
 }
