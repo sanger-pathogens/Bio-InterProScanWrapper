@@ -15,8 +15,10 @@ my $script_name = 'Bio::InterProScanWrapper::CommandLine::FarmInterproscan';
 my $cwd = getcwd();
 
 my %scripts_and_expected_files = (
-    '-a t/data/input_proteins.faa -e '.$cwd.'/t/bin/dummy_interproscan_non_empty_output --no_lsf' =>
-      ['input_proteins.faa.iprscan.gff','t/data/dummy_merged_annotation.gff'],
+    '-a t/data/input_proteins.faa -e '.$cwd.'/t/bin/dummy_interproscan --no_lsf' =>
+      [ ['input_proteins.faa.iprscan.gff'], ['t/data/dummy_merged_annotation.gff'] ],
+    '-a t/data/input_annotation.gff -e '.$cwd.'/t/bin/dummy_interproscan -g -c 11 --no_lsf' =>
+      [ ['input_annotation.gff.iprscan.gff'], ['t/data/dummy_merged_annotation.iprscan.gff'] ],
 );
 
 mock_execute_script_and_check_output( $script_name, \%scripts_and_expected_files );

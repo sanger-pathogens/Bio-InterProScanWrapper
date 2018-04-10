@@ -65,17 +65,28 @@ sub _build__graph_obj {
 sub _extract_ontology_terms {
   my ($self) = @_;
   my %extracted_ontology_terms;
-  my $gffio = Bio::Tools::GFF->new(-file => $self->iprscan_file, -gff_version => 3);
-  while (my $feature = $gffio->next_feature()) {
-    if ( $feature->has_tag('Ontology_term') ) {
-      my @ontology_values = $feature->get_tag_values('Ontology_term');
-      if ( exists $extracted_ontology_terms{ $feature->seq_id  } ) {
-         $extracted_ontology_terms{ $feature->seq_id } = [ @{ $extracted_ontology_terms{ $feature->seq_id} }, @ontology_values ];
-      } else {
-        $extracted_ontology_terms{ $feature->seq_id  } =  \@ontology_values ;
+  my $gffio = Bio::Tools::GFF->new(-file => $self->iprscan_file, -gff_version => 3 );
+  
+  eval {      
+	local $SIG{__WARN__} = sub { @_; };      
+	my $feature = $gffio->next_feature(); 
+  };
+   
+#  Bio::InterProScanWrapper::Exceptions::BadGFF3->throw( error => "iprscan file does not look like GFF3: " . $self->iprscan_file . "\n")
+#    unless (!$@);
+  if (!$@) {
+    while (my $feature = $gffio->next_feature()) {
+      if ( $feature->has_tag('Ontology_term') ) {
+        my @ontology_values = $feature->get_tag_values('Ontology_term');
+        if ( exists $extracted_ontology_terms{ $feature->seq_id  } ) {
+          $extracted_ontology_terms{ $feature->seq_id } = [ @{ $extracted_ontology_terms{ $feature->seq_id} }, @ontology_values ];
+        } else {
+          $extracted_ontology_terms{ $feature->seq_id  } =  \@ontology_values ;
+        }
       }
     }
   }  
+
   $self->_get_unique_ontology_terms(\%extracted_ontology_terms);
   return \%extracted_ontology_terms;
 }
@@ -176,12 +187,11 @@ sub _add_go_terms_to_gff {
 sub run {
   my ($self) = @_;  
   my $extracted_ontology_terms = $self->_extract_ontology_terms;
+
   $self->_write_go_terms_to_tsv($extracted_ontology_terms);  
   $self->_write_go_term_summary($extracted_ontology_terms);
   $self->_add_go_terms_to_gff($extracted_ontology_terms) if (defined $self->gff_file);
 }
-
-
 
 no Moose;
 __PACKAGE__->meta->make_immutable;

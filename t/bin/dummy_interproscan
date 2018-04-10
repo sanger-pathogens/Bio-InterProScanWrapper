@@ -1,6 +1,8 @@
 #!/usr/bin/env perl
 use Moose;
 use Getopt::Long;
+use File::Copy;
+
 my($gff,$goterms,$iprlookup,$in,$out,$pathways);
 GetOptions(
     'f=s' => \$gff,
@@ -10,6 +12,12 @@ GetOptions(
     'pathways' => \$pathways,
     'outfile=s' => \$out
 );
-system("touch input_proteins.faa.iprscan.gff");
-system("touch $out");
+
+if ($in =~ m/.gff$/) {
+    copy('t/data/input_annotation.gff.iprscan.gff', $out);
+} else {
+    system("touch input_proteins.faa.iprscan.gff");
+    system("touch $out");
+}
+
 1;

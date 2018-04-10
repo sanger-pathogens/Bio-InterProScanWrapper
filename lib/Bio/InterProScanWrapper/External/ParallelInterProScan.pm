@@ -16,6 +16,8 @@ Run and parse the output of cmscan
 =cut
 
 use Moose;
+use Bio::InterProScanWrapper::Exceptions;
+use Data::Dumper;
 
 has 'input_file'          => ( is => 'ro', isa => 'Str',  required => 1 );
 has 'input_is_gff'        => ( is => 'ro', isa => 'Bool', required => 1 );
@@ -52,7 +54,6 @@ sub _run_interproscan_cmd {
   my ($self) = @_;
   my $cmd = $self->_cmd;
   system($cmd);
-
   1;
 }
 
@@ -67,7 +68,6 @@ sub _run_merge_cmd {
   my ($self) = @_;
   my $merge_cmd = $self->_merge_cmd;
   `$merge_cmd`;
-
   1;
 }
 
@@ -82,15 +82,14 @@ sub _run_go_extraction_cmd{
   my ($self) = @_;
   my $go_extraction_cmd = $self->_go_extraction_cmd;
   `$go_extraction_cmd`;
-
   1;
 }
 
 sub run {
   my ($self) = @_;
   $self->_run_interproscan_cmd;
-  $self->_run_merge_cmd;
-  $self->_run_go_extraction_cmd (if $self->input_is_gff);
+  $self->_run_merge_cmd;  
+  $self->_run_go_extraction_cmd if ( $self->input_is_gff );
   1;
 }
 

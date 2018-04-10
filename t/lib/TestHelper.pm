@@ -2,13 +2,17 @@ package TestHelper;
 use Moose::Role;
 use Test::Most;
 use Test::Files qw(compare_ok);
+use File::Temp;
+use File::Copy;
+use File::Basename;
+use Data::Dumper;
 
 sub mock_execute_script_and_check_output {
-    my ( $script_name, $scripts_and_expected_files ) = @_;
-    
+    my ( $script_name, $scripts_and_expected_files, $columns_to_exclude ) = @_;
     open OLDOUT, '>&STDOUT';
     open OLDERR, '>&STDERR';
     eval("use $script_name ;");
+    
     my $returned_values = 0;
     {
         local *STDOUT;
@@ -22,11 +26,20 @@ sub mock_execute_script_and_check_output {
 
             my $cmd = "$script_name->new(args => \\\@input_args, script_name => '$script_name')->run;";
             eval($cmd);
-            my $actual_output_file_name = $scripts_and_expected_files->{$script_parameters}->[0];
-            my $expected_output_file_name = $scripts_and_expected_files->{$script_parameters}->[1];
-            ok(-e $actual_output_file_name, "Actual output file exists $actual_output_file_name");
-            compare_ok($actual_output_file_name, $expected_output_file_name, "Actual and expected output match for '$script_parameters'");
-            unlink($actual_output_file_name);
+            warn $@ if $@;
+
+            my @actual_output_file_names   = @{ $scripts_and_expected_files->{$script_parameters}->[0] };
+            my @expected_output_file_names = @{ $scripts_and_expected_files->{$script_parameters}->[1] } if ( defined($scripts_and_expected_files->{$script_parameters}->[1]) );
+
+            for (my $i=0; $i < scalar(@actual_output_file_names); $i++) {
+                ok( -e $actual_output_file_names[$i], "Actual output file exists $actual_output_file_names[$i]  $script_parameters" );
+
+                if ( defined($expected_output_file_names[$i]) ) {
+                    compare_ok( $actual_output_file_names[$i], $expected_output_file_names[$i], "Actual and expected output match for '$script_parameters'" );
+                }
+
+                unlink($actual_output_file_names[$i]);
+            }
         }
         close STDOUT;
         close STDERR;

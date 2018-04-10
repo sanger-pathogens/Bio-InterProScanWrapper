@@ -106,12 +106,11 @@ sub _create_protein_fasta_file_from_gff {
   my $exected_protein_fasta_file = $self->_input_protein_filename;
   (-e $exected_protein_fasta_file) or Bio::InterProScanWrapper::Exceptions::FileNotFound->throw(
     error => "Couldn't find extracted proteins file: " . $exected_protein_fasta_file );
-  
   return 1;
 }
 
 sub _create_protein_file {
-    my ( $self, $seq_io_protein, $counter ) = @_;
+   my ( $self, $seq_io_protein, $counter ) = @_;
     my $output_filename = $self->_temp_directory_name . '/' . ($counter +1) . $self->_protein_file_suffix;
     my $fout         = Bio::SeqIO->new( -file => ">>" . $output_filename, -format => 'Fasta', -alphabet => 'protein' );
     my $raw_sequence = $seq_io_protein->seq;
@@ -171,7 +170,7 @@ sub annotate {
 
     my $protein_files = $self->_create_protein_files() ;
     last if ( @{$protein_files} == 0 );
-  
+
     my $job_runner;
     if ( $self->use_lsf ) {
   
@@ -213,7 +212,6 @@ sub merge_results
 
   # delete intermediate input files where there is 1 protein per file
   # move to separate cleanup job (ended)
-  die("WARNING");
   my $output_files        = $self->_expected_output_files($temp_directory);
   my $merge_gff_files_obj = Bio::InterProScanWrapper::ParseInterProOutput->new(
       gff_files   => $output_files,
