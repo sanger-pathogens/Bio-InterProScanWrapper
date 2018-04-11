@@ -172,8 +172,8 @@ sub _add_go_terms_to_gff {
       my @ontology_terms_to_add = @{$ontology_terms->{ $feature_id }};
       @ontology_terms_to_add = map "\"$ontology_terms_to_add[$_]\"", 0..$#ontology_terms_to_add; # escape quotes as gff_string removes them
       $feature->add_tag_value( 'Ontology_term', @ontology_terms_to_add );
-      print $gff_output_fh $gffio->gff_string($feature) . "\n";
     }
+   print $gff_output_fh $gffio->gff_string($feature) . "\n";
   }
 
   my $cmd = "sed -n '/##FASTA/,//p' " . $self->gff_file;
