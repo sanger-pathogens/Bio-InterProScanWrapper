@@ -75,8 +75,8 @@ sub _build__gff_filename {
 sub run {
   my ($self) = @_;
   ( (defined $self->iprscan_file && -e $self->iprscan_file ) && !$self->help ) or die $self->usage_text;
-  use Data::Dumper; print Dumper $self;
   my $obj = Bio::InterProScanWrapper::ExtractGoFromInterProOutput->new(
+        ontology_database => $self->ontology_database,
         iprscan_file      => $self->iprscan_file,
         gff_file          => $self->gff_file,
         output_filename   => $self->_output_filename,

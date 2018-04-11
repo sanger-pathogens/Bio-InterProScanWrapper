@@ -26,7 +26,6 @@ use Bio::InterProScanWrapper::ParseInterProOutput;
 use Bio::InterProScanWrapper::External::LSFInterProScan;
 use Bio::InterProScanWrapper::Exceptions;
 use Bio::InterProScanWrapper::ExtractGoFromInterProOutput;
-use Data::Dumper;
 
 has 'input_file'                  => ( is => 'ro', isa => 'Str',    required => 1 );
 has 'input_is_gff'                => ( is => 'ro', isa => 'Bool',   default  => 0 );

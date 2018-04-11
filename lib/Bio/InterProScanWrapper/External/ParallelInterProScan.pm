@@ -17,7 +17,6 @@ Run and parse the output of cmscan
 
 use Moose;
 use Bio::InterProScanWrapper::Exceptions;
-use Data::Dumper;
 
 has 'input_file'          => ( is => 'ro', isa => 'Str',  required => 1 );
 has 'input_is_gff'        => ( is => 'ro', isa => 'Bool', required => 1 );

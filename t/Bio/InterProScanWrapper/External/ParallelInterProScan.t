@@ -1,15 +1,16 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Data::Dumper;
 use Test::Files qw(compare_ok);
-use File::Temp;
-use File::Copy;
 use File::Basename;
+use File::Copy;
+use File::Temp;
 use Cwd;
 use Moose;
 
 BEGIN { unshift( @INC, './lib' ) }
+BEGIN { unshift( @INC, './t/lib' ) }
+with 'TestHelper';
 
 BEGIN {
     use Test::Most;
@@ -17,15 +18,11 @@ BEGIN {
 }
 
 my $cwd = getcwd();
+$ENV{'GO_OBO'} = $cwd . '/t/data/gene_ontology_subset.obo';
 
 my $tmp_obj = File::Temp->newdir( DIR =>$cwd );
 my $tmp_dir = $tmp_obj->dirname();
-my @seq_files = glob $cwd . "/t/data/interpro*.seq";
-foreach my $seq_file (@seq_files) {
-    my $dest_file = join( "/", $tmp_dir, basename($seq_file) );
-    copy($seq_file, $dest_file) or die "Could not move $seq_file to $dest_file: $!\n";
-}
-
+copy_seq_files_to_tmpdir($cwd, $tmp_dir);
 ok(my $protein_obj = Bio::InterProScanWrapper::External::ParallelInterProScan->new(
      input_file       => $cwd . '/t/data/input_proteins.faa',
      input_is_gff     => 0,
@@ -50,11 +47,7 @@ compare_ok(
 
 $tmp_obj = File::Temp->newdir( DIR =>$cwd );
 $tmp_dir = $tmp_obj->dirname();
-foreach my $seq_file (@seq_files) {
-    my $dest_file = join( "/", $tmp_dir, basename($seq_file) );
-    copy($seq_file, $dest_file) or die "Could not move $seq_file to $dest_file: $!\n";
-}
-
+copy_seq_files_to_tmpdir($cwd, $tmp_dir);
 ok(my $gff_obj = Bio::InterProScanWrapper::External::ParallelInterProScan->new(
      input_file       => $cwd . '/t/data/input_annotation.gff',
      input_is_gff     => 1,

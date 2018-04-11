@@ -1,7 +1,6 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Data::Dumper;
 use Test::Files qw(compare_ok);
 
 BEGIN { unshift( @INC, './lib' ) }

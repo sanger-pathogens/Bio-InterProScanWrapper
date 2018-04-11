@@ -14,7 +14,7 @@ GetOptions(
 );
 
 if ($in =~ m/.gff$/) {
-    copy('t/data/input_annotation.gff.iprscan.gff', $out);
+    copy('t/data/input_annotation.gff.iprscan.gff', $out) or die "Cannot copy file: " . $! . "\n";
 } else {
     system("touch input_proteins.faa.iprscan.gff");
     system("touch $out");

@@ -5,7 +5,6 @@ use Test::Files qw(compare_ok);
 use File::Temp;
 use File::Copy;
 use File::Basename;
-use Data::Dumper;
 
 sub mock_execute_script_and_check_output {
     my ( $script_name, $scripts_and_expected_files, $columns_to_exclude ) = @_;
@@ -52,6 +51,21 @@ sub mock_execute_script_and_check_output {
     # Avoid leaks by closing the independent copies.
     close OLDOUT or die "Can't close OLDOUT: $!";
     close OLDERR or die "Can't close OLDERR: $!";
+}
+
+sub copy_seq_files_to_tmpdir {
+    my ($cwd, $tmp_dir) = @_;
+    my @seq_files = glob $cwd . "/t/data/interpro*.seq";
+    foreach my $seq_file (@seq_files) {
+        my $dest_file = join( "/", $tmp_dir, basename($seq_file) );
+        copy($seq_file, $dest_file) or die "Could not move $seq_file to $dest_file: $!\n";
+    }
+}
+
+sub copy_files_for_tests {
+    my ($source_file, $destination) = @_;
+    my $dest_file = $destination . "/" . basename($source_file);
+    copy($source_file, $dest_file) or die "Cannot copy " . $source_file . ": " . $! . "\n";
 }
 
 no Moose;

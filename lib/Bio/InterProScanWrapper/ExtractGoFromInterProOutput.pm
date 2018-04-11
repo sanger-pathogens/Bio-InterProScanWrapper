@@ -21,7 +21,6 @@ use Bio::InterProScanWrapper::Exceptions;
 use Bio::Tools::GFF;
 use GO::Parser;
 use List::MoreUtils qw(uniq);
-use Data::Dumper;
 
 has 'iprscan_file'      => ( is => 'ro', isa => 'Str',       required => 1 );
 has 'gff_file'          => ( is => 'ro', isa => 'Str|Undef', required => 0 );
@@ -191,6 +190,7 @@ sub run {
   $self->_write_go_terms_to_tsv($extracted_ontology_terms);  
   $self->_write_go_term_summary($extracted_ontology_terms);
   $self->_add_go_terms_to_gff($extracted_ontology_terms) if (defined $self->gff_file);
+  1;
 }
 
 no Moose;
