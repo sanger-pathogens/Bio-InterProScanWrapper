@@ -1,5 +1,7 @@
 #!/usr/bin/env perl
 
+use strict;
+use warnings;
 use Moose;
 use Test::Files qw(compare_ok);
 use Cwd;
