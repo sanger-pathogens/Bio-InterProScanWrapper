@@ -139,11 +139,6 @@ sub _delete_list_of_files {
     return $self;
 }
 
-sub _delete_intermediate_protein_file {
-  my ( $self ) = @_;
-  unlink($self->_input_protein_filename) if ( $self->input_is_gff );
-}
-
 sub _expected_output_files {
     my ( $self, $input_directory ) = @_;
     my $output_suffix = $self->_output_suffix;
@@ -156,7 +151,7 @@ sub _expected_output_files {
     {
       $output_files[$i] = join('/',($input_directory, $output_files[$i]));
     }
-    
+
     return \@output_files;
 }
 
@@ -199,8 +194,6 @@ sub annotate {
     }
     $job_runner->run;
 
-    $self->_delete_intermediate_protein_file if ( $self->input_is_gff );
-
     return $self;
 }
 
@@ -218,8 +211,8 @@ sub merge_results
       exec => $self->exec,
   );
   $merge_gff_files_obj->merge_files;
-  $self->_delete_list_of_files($output_files);
   $self->_merge_proteins_into_gff( $self->input_file, $self->output_filename );
+  $self->_delete_list_of_files($output_files);
   
   remove_tree($temp_directory);
   return 1;

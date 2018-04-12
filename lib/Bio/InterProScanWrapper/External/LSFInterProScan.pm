@@ -99,18 +99,15 @@ sub run {
     my $number_of_protein_files = @{$self->protein_files};
     
     my $submitted_job = $self->_submit_job($directories,$number_of_protein_files );
-    
-    if(defined($submitted_job))
-    {
-      push(@submitted_job_ids, $submitted_job->id);
-    }
-    
+    push(@submitted_job_ids, $submitted_job->id) if(defined($submitted_job)); 
+        
     my $merge_dependancy_params =  $self->_construct_dependancy_params(\@submitted_job_ids);
-    $self->_submit_merge_job($merge_dependancy_params);
+    my $submitted_merge_job = $self->_submit_merge_job($merge_dependancy_params);
+    push(@submitted_job_ids, $submitted_merge_job->id) if(defined($submitted_merge_job));
 
     if ($self->input_is_gff) {
       my $go_extraction_dependancy_params =  $self->_construct_dependancy_params(\@submitted_job_ids);
-      $self->_submit_go_extraction_job($go_extraction_dependancy_params);
+      my $submitted_go_extraction_job = $self->_submit_go_extraction_job($go_extraction_dependancy_params);
     }
 
     1;
