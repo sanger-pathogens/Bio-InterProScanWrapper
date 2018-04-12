@@ -1,12 +1,15 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Data::Dumper;
+
+use Moose;
 use Cwd;
 use Test::Files qw(compare_ok);
 use File::Copy;
 
 BEGIN { unshift( @INC, './lib' ) }
+BEGIN { unshift( @INC, './t/lib' ) }
+with 'TestHelper';
 
 BEGIN {
     use Test::Most;
@@ -21,6 +24,15 @@ ok($obj = Bio::InterProScanWrapper->new(
   exec             => $cwd.'/t/bin/dummy_interproscan',
 ),'Initialise object');
 ok($obj->annotate, 'run a mocked interproscan');
+
+copy_files_for_tests( $cwd . '/t/data/input_annotation.gff', $cwd);
+ok($obj = Bio::InterProScanWrapper->new(
+  input_file          => 'input_annotation.gff',
+  input_is_gff	      => 1,
+  translation_table   => 11,
+  exec                => $cwd.'/t/bin/dummy_interproscan',
+),'Initialise annotation object');
+ok ( $obj->annotate, 'run mocked GFF interproscan');
 
 ok($obj = Bio::InterProScanWrapper->new(
   input_file   => $cwd.'/t/data/input_proteins.faa',
@@ -44,9 +56,8 @@ compare_ok(
 ok($file_names->[0] =~ /1.seq$/, 'file name as expected');
 ok($file_names->[1] =~ /2.seq$/, 'file name as expected');
 
-
 copy('t/data/intermediate_interpro.gff', 't/data/intermediate.gff');
-ok($obj->_merge_proteins_into_gff($obj->input_file, 't/data/intermediate.gff'));
+ok($obj->_merge_proteins_into_gff($obj->input_file, 't/data/intermediate.gff', 'merge proteins into gff is ok'));
 
 compare_ok(
 	't/data/intermediate.gff',
@@ -55,4 +66,11 @@ compare_ok(
 );
 
 unlink('t/data/intermediate.gff');
+unlink('input_proteins.faa.iprscan.gff');
+unlink('iprscan_results.gff');
+unlink('input_annotation.gff');
+unlink('iprscan_results.gff.go.tsv');
+unlink('iprscan_results.gff.go.summary.tsv');
+unlink('input_annotation.gff.go.gff');
+
 done_testing();

@@ -1,0 +1,17 @@
+#!/usr/bin/env perl
+
+package Bio::InterProScanWrapper::Main::ExtractGoFromInterProOutput;
+
+# ABSTRACT: Extract GO terms from Interproscan GFF output file
+# PODNAME:  extract_go_from_interpro_output
+
+=head1 SYNOPSIS
+Extract GO terms from the Interproscan GFF output file and summarise.
+=cut
+
+BEGIN { unshift( @INC, '../lib' ) }
+BEGIN { unshift( @INC, './lib' ) }
+BEGIN { unshift( @INC, '/software/pathogen/internal/prod/lib/' ) }
+use Bio::InterProScanWrapper::CommandLine::ExtractGoFromInterProOutput;
+
+Bio::InterProScanWrapper::CommandLine::ExtractGoFromInterProOutput->new(args => \@ARGV, script_name => $0)->run;

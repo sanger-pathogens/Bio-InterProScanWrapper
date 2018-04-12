@@ -14,34 +14,40 @@ use Cwd;
 use File::Basename;
 use Bio::InterProScanWrapper;
 
-has 'args'                    => ( is => 'ro', isa => 'ArrayRef', required => 1 );
-has 'script_name'             => ( is => 'ro', isa => 'Str',      required => 1 );
-has 'help'                    => ( is => 'rw', isa => 'Bool',     default  => 0 );
-has 'cpus'                    => ( is => 'rw', isa => 'Int',      default  => 100 );
-has 'exec_script'             => ( is => 'rw', isa => 'Str',      default  => '/software/pathogen/external/apps/usr/local/interproscan-5.28-67.0/interproscan.sh' );
-has 'proteins_file'           => ( is => 'rw', isa => 'Str' );
-has 'tmp_directory'           => ( is => 'rw', isa => 'Str', default => '/tmp' );
-has 'output_filename'         => ( is => 'rw', isa => 'Str', lazy => 1, builder => '_build_output_filename' );
-has 'no_lsf'                  => ( is => 'rw', isa => 'Bool', default => 0 );
-has 'intermediate_output_dir' => ( is => 'rw', isa => 'Maybe[Str]');
+has 'args'                      => ( is => 'ro', isa => 'ArrayRef', required => 1 );
+has 'script_name'               => ( is => 'ro', isa => 'Str',      required => 1 );
+has 'help'                      => ( is => 'rw', isa => 'Bool',     default  => 0 );
+has 'cpus'                      => ( is => 'rw', isa => 'Int',      default  => 100 );
+has 'exec_script'               => ( is => 'rw', isa => 'Str',      default  => '/software/pathogen/external/apps/usr/local/interproscan-5.28-67.0/interproscan.sh' );
+has 'input_file'                => ( is => 'rw', isa => 'Str' );
+has 'translation_table'         => ( is => 'rw', isa => 'Int',      default => 1 );
+has 'input_is_gff'              => ( is => 'rw', isa => 'Bool',     default => 0 );
+has 'tmp_directory'             => ( is => 'rw', isa => 'Str',      default => '/tmp' );
+has 'output_filename'           => ( is => 'rw', isa => 'Str',      lazy => 1, builder => '_build_output_filename' );
+has 'no_lsf'                    => ( is => 'rw', isa => 'Bool',     default => 0 );
+has 'intermediate_output_dir'   => ( is => 'rw', isa => 'Maybe[Str]');
 
 sub BUILD {
     my ($self) = @_;
-    my ( $proteins_file, $tmp_directory, $help, $exec_script, $cpus, $output_filename, $no_lsf, $intermediate_output_dir );
+    my ( $input_file, $translation_table, $input_is_gff, $tmp_directory, $help, $exec_script, $cpus, $output_filename, $no_lsf, $intermediate_output_dir );
 
     GetOptionsFromArray(
         $self->args,
-        'a|proteins_file=s'   => \$proteins_file,
-        't|tmp_directory=s'   => \$tmp_directory,
-        'e|exec_script=s'     => \$exec_script,
-        'p|cpus=s'            => \$cpus,
-        'o|output_filename=s' => \$output_filename,
-        'l|no_lsf'            => \$no_lsf,
+        'a|input_file=s'            => \$input_file,
+        'g|gff'                     => \$input_is_gff,
+        'c|translation_table=i'     => \$translation_table,
+        't|tmp_directory=s'         => \$tmp_directory,
+        'e|exec_script=s'           => \$exec_script,
+        'p|cpus=s'                  => \$cpus,
+        'o|output_filename=s'       => \$output_filename,
+        'l|no_lsf'                  => \$no_lsf,
         'intermediate_output_dir=s' => \$intermediate_output_dir,
-        'h|help'              => \$help,
+        'h|help'                    => \$help,
     );
 
-    $self->proteins_file($proteins_file) if ( defined($proteins_file) );
+    $self->input_file($input_file) if ( defined($input_file) );
+    $self->translation_table($translation_table) if ( defined($translation_table) );
+    $self->input_is_gff($input_is_gff) if ( defined($input_is_gff) );
     if ( defined($tmp_directory) ) { $self->tmp_directory($tmp_directory); }
     else {
         $self->tmp_directory( getcwd() );
@@ -49,8 +55,8 @@ sub BUILD {
     $self->exec_script($exec_script)         if ( defined($exec_script) );
     $self->cpus($cpus)                       if ( defined($cpus) );
     $self->output_filename($output_filename) if ( defined($output_filename) );
-    $self->no_lsf(1)                         if (  defined($no_lsf) );
-    $self->intermediate_output_dir($intermediate_output_dir)  if (  defined($intermediate_output_dir) );
+    $self->no_lsf(1)                         if ( defined($no_lsf) );
+    $self->intermediate_output_dir($intermediate_output_dir)  if ( defined($intermediate_output_dir) );
 
 }
 
@@ -58,9 +64,9 @@ sub _build_output_filename
 {
   my ($self) = @_;
   my $output_filename = 'iprscan_results.gff';
-  if(defined($self->proteins_file))
+  if(defined($self->input_file))
   {
-    my($filename, $directories, $suffix) = fileparse($self->proteins_file);
+    my($filename, $directories, $suffix) = fileparse($self->input_file);
     $output_filename = getcwd().'/'.$filename.'.iprscan.gff';
   }
   return $output_filename;
@@ -69,33 +75,36 @@ sub _build_output_filename
 sub merge_results
 {
    my ($self) = @_;
-   ( ( -e $self->proteins_file ) && !$self->help ) or die $self->usage_text;
+
+   ( ( -e $self->input_file ) && !$self->help ) or die $self->usage_text;
   
    my $obj = Bio::InterProScanWrapper->new(
-       input_file      => $self->proteins_file,
-       _tmp_directory  => $self->tmp_directory,
-       cpus            => $self->cpus,
-       exec            => $self->exec_script,
-       output_filename => $self->output_filename,
-       use_lsf         => ($self->no_lsf == 1 ? 0 : 1),
+       input_file         => $self->input_file,
+       translation_table  => $self->translation_table,
+       input_is_gff       => $self->input_is_gff,
+       _tmp_directory     => $self->tmp_directory,
+       cpus               => $self->cpus,
+       exec               => $self->exec_script,
+       output_filename    => $self->output_filename,
+       use_lsf            => ($self->no_lsf == 1 ? 0 : 1),
    );
    $obj->merge_results($self->intermediate_output_dir);
 }
 
 sub run {
     my ($self) = @_;
-    ( ( -e $self->proteins_file ) && !$self->help ) or die $self->usage_text;
-
+    ( ( -e $self->input_file ) && !$self->help ) or die $self->usage_text;
     my $obj = Bio::InterProScanWrapper->new(
-        input_file      => $self->proteins_file,
-        _tmp_directory  => $self->tmp_directory,
-        cpus            => $self->cpus,
-        exec            => $self->exec_script,
-        output_filename => $self->output_filename,
-        use_lsf         => ($self->no_lsf == 1 ? 0 : 1)
+        input_file        => $self->input_file,
+        translation_table => $self->translation_table,
+        input_is_gff      => $self->input_is_gff,
+        _tmp_directory    => $self->tmp_directory,
+        cpus              => $self->cpus,
+        exec              => $self->exec_script,
+        output_filename   => $self->output_filename,
+        use_lsf           => ($self->no_lsf == 1 ? 0 : 1)
     );
     $obj->annotate;
-
 }
 
 sub usage_text {
@@ -108,7 +117,7 @@ sub usage_text {
   
     # Run InterProScan using LSF
     farm_interproscan -a proteins.faa
-    
+
     # Provide an output file name 
     farm_interproscan -a proteins.faa -o output.gff
     
@@ -117,6 +126,12 @@ sub usage_text {
     
     # Run on a single host (no LSF). '-p x' needs x*2 CPUs and x*2GB of RAM to be available
     farm_interproscan -a proteins.faa --no_lsf -p 10 
+
+    # Run InterProScan using LSF with GFF input (standard genetic code for translation)
+    farm_interproscan -a annotation.gff -g
+
+    # Run InterProScan using LSF with GFF input (bacterial code for translation)
+    farm_interproscan -a annotation.gff -g -c 11
 
     # This help message
     farm_interproscan -h

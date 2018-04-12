@@ -1,7 +1,6 @@
 #!/usr/bin/env perl
 use strict;
 use warnings;
-use Data::Dumper;
 use Test::Files qw(compare_ok);
 
 BEGIN { unshift( @INC, './lib' ) }
@@ -10,7 +9,6 @@ BEGIN {
     use Test::Most;
     use_ok('Bio::InterProScanWrapper::ParseInterProOutput');
 }
-
 
 ok(my $obj = Bio::InterProScanWrapper::ParseInterProOutput->new(
   gff_files   => ['t/data/iproutput/0.seq.out','t/data/iproutput/1.seq.out','t/data/iproutput/2.seq.out','t/data/iproutput/3.seq.out'],

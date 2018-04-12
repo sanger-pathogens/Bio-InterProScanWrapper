@@ -9,9 +9,11 @@ Exceptions for input data
 
 
 use Exception::Class (
-    Bio::InterProScanWrapper::Exceptions::FileNotFound   => { description => 'Couldnt open the file' },
-    Bio::InterProScanWrapper::Exceptions::CouldntWriteToFile   => { description => 'Couldnt open the file for writing' },
-    Bio::InterProScanWrapper::Exceptions::LSFJobFailed   => { description => 'Jobs failed' },
+    Bio::InterProScanWrapper::Exceptions::FileNotFound       => { description => 'Couldnt open the file' },
+    Bio::InterProScanWrapper::Exceptions::CouldntReadFile    => { description => 'Couldnt open the file for reading' },
+    Bio::InterProScanWrapper::Exceptions::CouldntWriteToFile => { description => 'Couldnt open the file for writing' },
+    Bio::InterProScanWrapper::Exceptions::LSFJobFailed       => { description => 'Jobs failed' },
+    Bio::InterProScanWrapper::Exceptions::BadGFF3            => { description => 'Bio::Tools::GFF does not recognise format' },
 );  
 
 1;

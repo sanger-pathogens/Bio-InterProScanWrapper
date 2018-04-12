@@ -1,0 +1,61 @@
+##gff-version 3
+#Produced using: /software/pathogen/external/apps/usr/local/interproscan-5.28-67.0/interproscan.sh
+##sequence-region abc_00004 1 238
+abc_00004	.	polypeptide	1	238	.	+	.	ID=abc_00004;md5=ca3cd667b576943f517fd3ac8b0e067f
+abc_00004	Gene3D	protein_match	51	56	1.3E-43	+	.	date=10-04-2018;Target=abc_00004 51 56;ID=match$1_51_56;Name=G3DSA:3.10.20.120;status=T
+abc_00004	Gene3D	protein_match	136	233	1.3E-43	+	.	date=10-04-2018;Target=abc_00004 136 233;ID=match$1_136_233;Name=G3DSA:3.10.20.120;status=T
+abc_00004	ProSitePatterns	protein_match	167	190	.	+	.	date=10-04-2018;Target=abc_00004 167 190;Ontology_term="GO:0005576","GO:0009405";ID=match$2_167_190;signature_desc=Staphyloccocal enterotoxin/Streptococcal pyrogenic exotoxin signature 2.;Name=PS00278;status=T;Dbxref="InterPro:IPR006126"
+abc_00004	SUPERFAMILY	protein_match	139	236	1.06E-22	+	.	date=10-04-2018;Target=abc_00004 139 236;Ontology_term="GO:0005576","GO:0009405";ID=match$3_139_236;Name=SSF54334;status=T;Dbxref="InterPro:IPR016091"
+abc_00004	Gene3D	protein_match	57	135	1.3E-43	+	.	date=10-04-2018;Target=abc_00004 57 135;ID=match$4_57_135;Name=G3DSA:2.40.50.110;status=T
+##sequence-region abc_00005 1 241
+abc_00005	.	polypeptide	1	241	.	+	.	ID=abc_00005;md5=869620540c07cc4e197d260ef31c85a3
+abc_00005	PRINTS	protein_match	127	138	5.2E-5	+	.	date=10-04-2018;Target=abc_00005 127 138;Ontology_term="GO:0005576","GO:0009405";ID=match$5_127_138;signature_desc=Staphylococcus aureus exotoxin signature;Name=PR01800;status=T;Dbxref="InterPro:IPR008375"
+abc_00005	PRINTS	protein_match	166	182	5.2E-5	+	.	date=10-04-2018;Target=abc_00005 166 182;Ontology_term="GO:0005576","GO:0009405";ID=match$5_166_182;signature_desc=Staphylococcus aureus exotoxin signature;Name=PR01800;status=T;Dbxref="InterPro:IPR008375"
+abc_00005	PRINTS	protein_match	205	220	5.2E-5	+	.	date=10-04-2018;Target=abc_00005 205 220;Ontology_term="GO:0005576","GO:0009405";ID=match$5_205_220;signature_desc=Staphylococcus aureus exotoxin signature;Name=PR01800;status=T;Dbxref="InterPro:IPR008375"
+abc_00005	Gene3D	protein_match	57	135	2.0E-43	+	.	date=10-04-2018;Target=abc_00005 57 135;ID=match$6_57_135;Name=G3DSA:2.40.50.110;status=T
+abc_00005	ProSitePatterns	protein_match	167	190	.	+	.	date=10-04-2018;Target=abc_00005 167 190;Ontology_term="GO:0005576","GO:0009405";ID=match$7_167_190;signature_desc=Staphyloccocal enterotoxin/Streptococcal pyrogenic exotoxin signature 2.;Name=PS00278;status=T;Dbxref="InterPro:IPR006126"
+abc_00005	SUPERFAMILY	protein_match	138	237	2.75E-27	+	.	date=10-04-2018;Target=abc_00005 138 237;Ontology_term="GO:0005576","GO:0009405";ID=match$8_138_237;Name=SSF54334;status=T;Dbxref="InterPro:IPR016091"
+abc_00005	PRINTS	protein_match	16	34	9.8E-5	+	.	date=10-04-2018;Target=abc_00005 16 34;ID=match$9_16_34;signature_desc=Staphylococcal toxic shock syndrome toxin signature;Name=PR01501;status=T;Dbxref="InterPro:IPR013307"
+abc_00005	PRINTS	protein_match	175	197	9.8E-5	+	.	date=10-04-2018;Target=abc_00005 175 197;ID=match$9_175_197;signature_desc=Staphylococcal toxic shock syndrome toxin signature;Name=PR01501;status=T;Dbxref="InterPro:IPR013307"
+abc_00005	PRINTS	protein_match	167	180	1.1E-6	+	.	date=10-04-2018;Target=abc_00005 167 180;ID=match$10_167_180;signature_desc=Bacterial superantigen superfamily signature;Name=PR01898;status=T;Dbxref="InterPro:IPR013307"
+abc_00005	PRINTS	protein_match	180	194	1.1E-6	+	.	date=10-04-2018;Target=abc_00005 180 194;ID=match$10_180_194;signature_desc=Bacterial superantigen superfamily signature;Name=PR01898;status=T;Dbxref="InterPro:IPR013307"
+abc_00005	PRINTS	protein_match	92	118	1.1E-6	+	.	date=10-04-2018;Target=abc_00005 92 118;ID=match$10_92_118;signature_desc=Bacterial superantigen superfamily signature;Name=PR01898;status=T;Dbxref="InterPro:IPR013307"
+abc_00005	PRINTS	protein_match	125	138	1.1E-6	+	.	date=10-04-2018;Target=abc_00005 125 138;ID=match$10_125_138;signature_desc=Bacterial superantigen superfamily signature;Name=PR01898;status=T;Dbxref="InterPro:IPR013307"
+abc_00005	Pfam	protein_match	166	232	1.5E-6	+	.	date=10-04-2018;Target=abc_00005 166 232;Ontology_term="GO:0005576","GO:0009405";ID=match$11_166_232;signature_desc=Staphylococcal/Streptococcal toxin, beta-grasp domain;Name=PF02876;status=T;Dbxref="InterPro:IPR006123"
+abc_00005	Gene3D	protein_match	51	56	2.0E-43	+	.	date=10-04-2018;Target=abc_00005 51 56;ID=match$12_51_56;Name=G3DSA:3.10.20.120;status=T
+abc_00005	Gene3D	protein_match	136	235	2.0E-43	+	.	date=10-04-2018;Target=abc_00005 136 235;ID=match$12_136_235;Name=G3DSA:3.10.20.120;status=T
+##sequence-region abc_00001 1 319
+abc_00001	.	polypeptide	1	319	.	+	.	ID=abc_00001;md5=0e9fb12941afa143113c38ab55f3d84d
+abc_00001	SUPERFAMILY	protein_match	29	318	3.6E-101	+	.	date=10-04-2018;Target=abc_00001 29 318;ID=match$13_29_318;Name=SSF56959;status=T;Dbxref="InterPro:IPR036435"
+abc_00001	PRINTS	protein_match	248	265	3.7E-13	+	.	date=10-04-2018;Target=abc_00001 248 265;Ontology_term="GO:0005576","GO:0009405";ID=match$14_248_265;signature_desc=Staphylococcal bi-component toxin signature;Name=PR01468;status=T;Dbxref="InterPro:IPR003963"
+abc_00001	PRINTS	protein_match	127	148	3.7E-13	+	.	date=10-04-2018;Target=abc_00001 127 148;Ontology_term="GO:0005576","GO:0009405";ID=match$14_127_148;signature_desc=Staphylococcal bi-component toxin signature;Name=PR01468;status=T;Dbxref="InterPro:IPR003963"
+abc_00001	PRINTS	protein_match	66	85	3.7E-13	+	.	date=10-04-2018;Target=abc_00001 66 85;Ontology_term="GO:0005576","GO:0009405";ID=match$14_66_85;signature_desc=Staphylococcal bi-component toxin signature;Name=PR01468;status=T;Dbxref="InterPro:IPR003963"
+abc_00001	Gene3D	protein_match	27	318	5.6E-118	+	.	date=10-04-2018;Target=abc_00001 27 318;ID=match$15_27_318;Name=G3DSA:2.70.240.10;status=T
+abc_00001	TIGRFAM	protein_match	4	319	8.4E-132	+	.	date=10-04-2018;Target=abc_00001 4 319;Ontology_term="GO:0005576","GO:0009405";ID=match$16_4_319;signature_desc=hlyII: beta-channel forming cytolysin;Name=TIGR01002;status=T;Dbxref="InterPro:IPR003963"
+abc_00001	Pfam	protein_match	63	313	1.6E-82	+	.	date=10-04-2018;Target=abc_00001 63 313;Ontology_term="GO:0005576","GO:0051715";ID=match$17_63_313;signature_desc=Leukocidin/Hemolysin toxin family;Name=PF07968;status=T;Dbxref="InterPro:IPR016183"
+abc_00001	ProSitePatterns	protein_match	287	296	.	+	.	date=10-04-2018;Target=abc_00001 287 296;Ontology_term="GO:0005576";ID=match$18_287_296;signature_desc=Aerolysin type toxins signature.;Name=PS00274;status=T;Dbxref="InterPro:IPR005831"
+##FASTA
+##FASTA
+>abc_00001
+MKTRIVSSVTTTLLLGSILMNPVANAADSDINIKTGTTDIGSNTTVKTGDLVTYDKENGM
+HKKVFYSFIDDKNHNKKLLVIRTKGTIAGQYRVYSEEGANKSGLAWPSAFKVQLQLPDNE
+VAQISDYYPRNSIDTKEYMSTLTYGFNGNVTGDDTGKIGGLIGANVSIGHTLKYVQPDFK
+TILESPTDKKVGWKVIFNNMVNQNWGPYDRDSWNPVYGNQLFMKTRNGSMKAAENFLDPN
+KASSLLSSGFSPDFATVITMDRKASKQQTNIDVIYERVRDDYQLHWTSTNWKGTNTKDKW
+TDRSSERYKIDWEKEEMTN*
+>abc_00002
+MKLFYIVFLIIIWLNIFLGNEIIHTLTVLITTLYIVNSRKGIKNDRVE*
+>abc_00003
+MTELNNIINSLQSLFESESGYKISKNSGVPYQTVQDLRNGKTKLEDARFRTIIKLYSYYV
+SLKEH*
+>abc_00004
+MSKNITKNIILTTTLLLLGTVLPQNQKPVFSFYSEAKAYSIGQDETNINELIKYYTQPHF
+SFSNKWLYQYDNGNIYVELKRYSWSAHISLWGAESWGNINQLKDRYVDVFGLKDKDTDQL
+WWSYRETFTGGVTPAAKPSDKTYNLFVQYKDKLQTIIGAHKIYQGNKPVLTLKEIDFRAR
+EALIKNKILYTENRNKGKLKITGGGNNYTIDLSKRLHSDLANVYVKNPNKITVDVLFD*
+>abc_00005
+MNNNITKKIILSTTLLLLGTAFTQFPNTPINSSSEAKAYYINQNETNVNELTKYYSQKYL
+TFSNSTLWQKDNGTIHATLLQFSWYSHIQVYGPESWGNINQLRNKSVDIFGIKDQETIDS
+FALSQETFTGGVTPAATSNDKHYKLNVTYKDKAETFTGGFPVYEGNKPVLTLKELDFRIR
+QTLIKSKKLYNNSYNKGQIKITGTDNNYTIDLSKRLPSTDANRYVKKPQNAKIEVILEKS
+N*
