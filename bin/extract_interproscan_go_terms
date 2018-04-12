@@ -11,7 +11,7 @@ Extract GO terms from the Interproscan GFF output file and summarise.
 
 BEGIN { unshift( @INC, '../lib' ) }
 BEGIN { unshift( @INC, './lib' ) }
-#BEGIN { unshift( @INC, '/software/pathogen/internal/prod/lib/' ) }
+BEGIN { unshift( @INC, '/software/pathogen/internal/prod/lib/' ) }
 use Bio::InterProScanWrapper::CommandLine::ExtractGoFromInterProOutput;
 
 Bio::InterProScanWrapper::CommandLine::ExtractGoFromInterProOutput->new(args => \@ARGV, script_name => $0)->run;
