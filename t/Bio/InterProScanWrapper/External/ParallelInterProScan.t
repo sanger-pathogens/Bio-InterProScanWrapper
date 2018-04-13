@@ -18,7 +18,7 @@ BEGIN {
 }
 
 my $cwd = getcwd();
-$ENV{'GO_OBO'} = $cwd . '/t/data/gene_ontology_subset.obo';
+#$ENV{'GO_OBO'} = $cwd . '/t/data/gene_ontology_subset.obo';
 
 my $tmp_obj = File::Temp->newdir( DIR =>$cwd );
 my $tmp_dir = $tmp_obj->dirname();
