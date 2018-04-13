@@ -17,7 +17,7 @@ BEGIN {
 
 my $script_name = 'Bio::InterProScanWrapper::CommandLine::ExtractGoFromInterProOutput';
 my $cwd = getcwd();
-$ENV{'GO_OBO'} = $cwd . '/t/data/gene_ontology_subset.obo';
+#$ENV{'GO_OBO'} = $cwd . '/t/data/gene_ontology_subset.obo';
 
 copy_files_for_tests($cwd . '/t/data/input_annotation.gff', $cwd);
 copy_files_for_tests($cwd . '/t/data/input_annotation.gff.iprscan.gff', $cwd);
@@ -67,7 +67,7 @@ compare_ok(
 compare_ok(
     't/data/expected.go.gff',
     'input_annotation.gff.go.gff',
-    'GO term summary as expected'
+    'GO term GFF as expected'
 );
 
 unlink('input_annotation.gff');

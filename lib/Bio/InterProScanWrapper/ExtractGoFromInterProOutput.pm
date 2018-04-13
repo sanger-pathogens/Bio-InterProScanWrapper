@@ -28,10 +28,11 @@ has 'output_filename'   => ( is => 'ro', isa => 'Str',       default => 'iprscan
 has 'summary_filename'  => ( is => 'ro', isa => 'Str',       default => 'iprscan_results.gff.go.summary.tsv' );
 has 'gff_filename'      => ( is => 'ro', isa => 'Str|Undef' );
 has 'ontology_database' => ( is => 'ro', isa => 'Str',              lazy => 1, default => $ENV{'GO_OBO'} );
-has '_graph_obj'        => ( is => 'ro', isa => 'GO::Model::Graph', lazy => 1, builder => '_build__graph_obj' );
+#has '_graph_obj'        => ( is => 'ro', isa => 'GO::Model::Graph', lazy => 1, builder => '_build__graph_obj' );
 has '_output_fh'	=> ( is => 'ro', lazy => 1, builder => '_build__output_fh');	
 has '_summary_fh'       => ( is => 'ro', lazy => 1, builder => '_build__summary_fh' );
 has '_gff_obj'          => ( is => 'ro', lazy => 1, builder => '_build__gff_obj' );
+has '_ontology_hash'     => ( is => 'ro', lazy => 1, builder => '_build__ontology_hash' );
 
 sub _build__ontology_database {
   my ($self) = @_;
@@ -53,12 +54,34 @@ sub _build__summary_fh {
   return $fh;
 }
 
-sub _build__graph_obj {
+#sub _build__graph_obj {
+#  my ($self) = @_;
+#  my $parser = new GO::Parser({handler=>'obj'});
+#  $parser->parse($self->ontology_database);
+#  my $graph = $parser->handler->graph;
+#  return $graph;
+#}
+
+sub _build__ontology_hash {
   my ($self) = @_;
-  my $parser = new GO::Parser({handler=>'obj'});
-  $parser->parse($self->ontology_database);
-  my $graph = $parser->handler->graph;
-  return $graph;
+  
+  open(my $fh, '<', $self->ontology_database) or Bio::InterProScanWrapper::Exceptions::FileNotFound->throw (
+    error => "Couldn't find ontology database (.obo): " . $self->ontology_database );  
+
+  my %ontology_hash;
+  local $/ = "[Term]";
+  while (my $chunk = <$fh>) {
+    my ($go_id) = $chunk =~ /id:.+/g;
+    my ($go_name) = $chunk =~ /name:.+/g;
+    my ($go_namespace) = $chunk =~ /namespace:.+/g;
+    if (defined $go_id) {
+      $ontology_hash{ substr($go_id, 4) } = { 'go_name' => substr($go_name, 6),
+                                              'go_namespace' => substr($go_namespace, 11) };
+    }
+  }
+  close($fh);
+  
+  return \%ontology_hash;
 }
 
 sub _extract_ontology_terms {
@@ -71,8 +94,6 @@ sub _extract_ontology_terms {
 	my $feature = $gffio->next_feature(); 
   };
    
-#  Bio::InterProScanWrapper::Exceptions::BadGFF3->throw( error => "iprscan file does not look like GFF3: " . $self->iprscan_file . "\n")
-#    unless (!$@);
   if (!$@) {
     while (my $feature = $gffio->next_feature()) {
       if ( $feature->has_tag('Ontology_term') ) {
@@ -86,8 +107,8 @@ sub _extract_ontology_terms {
     }
   }  
 
-  $self->_get_unique_ontology_terms(\%extracted_ontology_terms);
-  return \%extracted_ontology_terms;
+  my $unique_ontology_terms = $self->_get_unique_ontology_terms(\%extracted_ontology_terms);
+  return $unique_ontology_terms;
 }
 
 sub _get_unique_ontology_terms {
@@ -123,16 +144,20 @@ sub _count_go_term_occurence {
       if ( exists $ontology_counts{$go_id} ) {
         $ontology_counts{$go_id}->{'count'}++;
       } else {
-        my $term = $self->_graph_obj->get_term($go_id);
         $ontology_counts{$go_id}->{'count'} = 1;
-        eval {
-          $ontology_counts{$go_id}->{'name'} = $term->name;
-          $ontology_counts{$go_id}->{'namespace'} = $term->namespace;
-        };
-        if( !$@ ) {
-          $ontology_counts{$go_id}->{'name'} = $term->name;
-          $ontology_counts{$go_id}->{'namespace'} = $term->namespace;
-        }        
+        if ( exists $self->_ontology_hash->{$go_id} ) {
+          $ontology_counts{$go_id}->{'go_name'} = $self->{_ontology_hash}->{$go_id}->{'go_name'};
+          $ontology_counts{$go_id}->{'go_namespace'} = $self->{_ontology_hash}->{$go_id}->{'go_namespace'};
+        } 
+#        my $term = $self->_graph_obj->get_term($go_id);
+#        eval {
+#          $ontology_counts{$go_id}->{'name'} = $term->name;
+#          $ontology_counts{$go_id}->{'namespace'} = $term->namespace;
+#        };
+#        if( !$@ ) {
+#          $ontology_counts{$go_id}->{'name'} = $term->name;
+#          $ontology_counts{$go_id}->{'namespace'} = $term->namespace;
+#        }        
       }
     }
   }
@@ -144,8 +169,8 @@ sub _write_go_term_summary {
   my $ontology_terms_to_summarise = $_[1];
   my $ontology_term_counts = $self->_count_go_term_occurence($ontology_terms_to_summarise);   
   foreach my $go_id (reverse sort { $ontology_term_counts->{$a}->{'count'} <=> $ontology_term_counts->{$b}->{'count'} } keys %{$ontology_term_counts}) {
-    if ( exists $ontology_term_counts->{$go_id}->{'name'} && exists $ontology_term_counts->{$go_id}->{'namespace'}) {
-      print {$self->_summary_fh} join("\t", $go_id, $ontology_term_counts->{$go_id}->{'count'}, $ontology_term_counts->{$go_id}->{'name'}, $ontology_term_counts->{$go_id}->{'namespace'}) . "\n";
+    if ( exists $ontology_term_counts->{$go_id}->{'go_name'} && exists $ontology_term_counts->{$go_id}->{'go_namespace'}) {
+      print {$self->_summary_fh} join("\t", $go_id, $ontology_term_counts->{$go_id}->{'count'}, $ontology_term_counts->{$go_id}->{'go_name'}, $ontology_term_counts->{$go_id}->{'go_namespace'}) . "\n";
     } else {
       print {$self->_summary_fh} join("\t", $go_id, $ontology_term_counts->{$go_id}->{'count'}) . "\n";
     }
@@ -186,7 +211,6 @@ sub _add_go_terms_to_gff {
 sub run {
   my ($self) = @_;  
   my $extracted_ontology_terms = $self->_extract_ontology_terms;
-
   $self->_write_go_terms_to_tsv($extracted_ontology_terms);  
   $self->_write_go_term_summary($extracted_ontology_terms);
   $self->_add_go_terms_to_gff($extracted_ontology_terms) if (defined $self->gff_file);

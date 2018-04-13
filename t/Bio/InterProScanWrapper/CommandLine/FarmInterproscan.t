@@ -16,7 +16,7 @@ BEGIN {
 
 my $script_name = 'Bio::InterProScanWrapper::CommandLine::FarmInterproscan';
 my $cwd = getcwd();
-$ENV{'GO_OBO'} = $cwd . '/t/data/go_ontology_subset.obo';
+#$ENV{'GO_OBO'} = $cwd . '/t/data/go_ontology_subset.obo';
 
 copy_files_for_tests($cwd . '/t/data/input_annotation.gff', $cwd);
 my %scripts_and_expected_files = (
