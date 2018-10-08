@@ -18,7 +18,7 @@ has 'args'                      => ( is => 'ro', isa => 'ArrayRef', required => 
 has 'script_name'               => ( is => 'ro', isa => 'Str',      required => 1 );
 has 'help'                      => ( is => 'rw', isa => 'Bool',     default  => 0 );
 has 'cpus'                      => ( is => 'rw', isa => 'Int',      default  => 100 );
-has 'exec_script'               => ( is => 'rw', isa => 'Str',      default  => '/software/pathogen/external/apps/usr/local/interproscan-5.28-67.0/interproscan.sh' );
+has 'exec_script'               => ( is => 'rw', isa => 'Str',      default  => '/software/pathogen/external/apps/usr/local/interproscan-5.31-70.0/interproscan.sh' );
 has 'input_file'                => ( is => 'rw', isa => 'Str' );
 has 'translation_table'         => ( is => 'rw', isa => 'Int',      default => 1 );
 has 'input_is_gff'              => ( is => 'rw', isa => 'Bool',     default => 0 );
