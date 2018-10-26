@@ -31,12 +31,13 @@ download () {
 
 download $IPROSCAN_DOWNLOAD_URL "interproscan-${IPROSCAN_VERSION}-64-bit.tar.gz"
 
-## smalt
+## interproscan
 cd $build_dir
 iproscan_dir=$(pwd)/"interproscan-${IPROSCAN_VERSION}"
 if [ ! -d $iproscan_dir ]; then
   tar -pxvzf interproscan-${IPROSCAN_VERSION}-64-bit.tar.gz
 fi
+rm interproscan-${IPROSCAN_VERSION}-64-bit.tar.gz
 
 # Setup environment variables
 update_path () {

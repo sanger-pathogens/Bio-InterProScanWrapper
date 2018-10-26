@@ -11,7 +11,7 @@ addons:
     - prank
     - mafft
     - fasttree
-sudo: false
+sudo: true
 jdk:
   - openjdk8
   - oraclejdk8
