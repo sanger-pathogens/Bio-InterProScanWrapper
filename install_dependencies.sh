@@ -8,7 +8,7 @@ start_dir=$(pwd)
 # Install perl dependencies
 cpanm Dist::Zilla
 dzil authordeps --missing | cpanm
-cpanm GO::Parser Bio::Roary
+dzil listdeps --missing | cpanm
 
 set +x
 set +e
