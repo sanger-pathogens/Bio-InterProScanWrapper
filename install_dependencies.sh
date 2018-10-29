@@ -36,5 +36,7 @@ export PATH=$dummy_bin:$PATH
 
 cpanm -fn LSF-0.9.tar.gz
 
+cd $start_dir
+
 set +x
 set +e
