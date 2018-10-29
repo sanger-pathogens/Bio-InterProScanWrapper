@@ -8,7 +8,33 @@ start_dir=$(pwd)
 # Install perl dependencies
 cpanm Dist::Zilla
 dzil authordeps --missing | cpanm
-dzil listdeps --missing | cpanm
+cpanm Bio::Roary::ExtractProteomeFromGFF GO::Parser
+
+# Install LSF perl module
+mkdir build
+cd build
+build_dir=$(pwd)
+
+wget https://cpan.metacpan.org/authors/id/M/MS/MSOUTHERN/LSF-0.9.tar.gz
+
+mkdir bin
+cd bin
+
+#Create dummy bin with executables for LSF
+dummy_bin=$(pwd)
+declare -a arr=("augmentstarter" "bacct" "badmin" "bapp" "batch-acct" "bbot" "bchkpnt" "bclusters" "bconf" "bentags" "bgadd" "bgbroker" "bgdel" "bgmod" "bgpinfo" "bhist" "bhosts" "bhpart" "bjdepinfo" "bjgroup" "bjobs" "bkill" "blaunch" "blimits" "bmg" "bmgroup" "bmig" "bmod" "bmodify" "bparams" "bpeek" "bpost" "bqc" "bqueues" "bread" "breboot" "breconfig" "brequeue" "bresize" "bresources" "brestart" "bresume" "brlainfo" "brsvadd" "brsvdel" "brsvmod" "brsvs" "brun" "bsla" "bslots" "bstatus" "bstop" "bsub" "bswitch" "btop" "bugroup" "busers" "ch" "clnqs" "daemons_old" "datactrl" "datainfo" "dnssec-keygen" "egoapplykey" "egoconfig" "egogenkey" "egosh" "gmmpirun_wrapper" "init_energy" "initialize_eas" "intelmpi_wrapper" "lammpirun_wrapper" "lsacct" "lsacctmrg" "lsadmin" "lsclusters" "lseligible" "lsfrestart" "lsfshutdown" "lsfstartup" "lsgrun" "lshosts" "lsid" "lsinfo" "lsload" "lsloadadj" "lslockhost" "lslogin" "lsltasks" "lsmake" "lsmakerm" "lsmon" "lspasswd" "lsplace" "lsrcp" "lsreconfig" "lsrtasks" "lsrun" "lsrun.sh" "lstcsh" "lsunlockhost" "mpdstartup" "mpich2_wrapper" "mpich_mx_wrapper" "mpichp4_wrapper" "mpichsharemem_wrapper" "mpirun.lsf" "mvapich_wrapper" "openmpi_rankfile.sh" "openmpi_wrapper" "pam" "pipeclient" "pjllib.sh" "pmd_w" "poejob" "poe_w" "ppmsetvar" "preservestarter" "pvmjob" "qdel" "qjlist" "qlimit" "qmapmgr" "qmgr" "qothers" "qps" "qrestart" "qrun" "qsa" "qsnapshot" "qstat" "qsub" "qwatch" "sca_mpimon_wrapper" "TaskStarter" "tspeek" "tssub" "user_post_exec_prog" "user_pre_exec_prog" "xagent" "zapit")
+
+for i in "${arr[@]}"
+do
+   touch "$i"
+done
+
+chmod -R +x *
+
+cd $build_dir
+export PATH=$dummy_bin:$PATH
+
+cpanm -fn LSF-0.9.tar.gz
 
 set +x
 set +e
