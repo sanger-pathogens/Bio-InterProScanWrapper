@@ -31,10 +31,11 @@ done
 
 chmod -R +x *
 # Perl LSF module checks for version. Use dummy.
-echo "echo 'LSF 9.1.3.0'" > lsid
+echo ">&2 echo 'LSF 9.1.3.0'" > lsid
 
 cd $build_dir
 export PATH=$dummy_bin:$PATH
+export PATH=$start_dir/bin:$PATH
 
 cpanm -fn LSF-0.9.tar.gz
 
