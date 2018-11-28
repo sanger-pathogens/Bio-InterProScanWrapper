@@ -36,7 +36,7 @@ echo ">&2 echo 'LSF 9.1.3.0'" > lsid
 cd $build_dir
 export PATH=$dummy_bin:$PATH
 export PATH=$start_dir/bin:$PATH
-
+export GO_OBO=$start_dir/t/data/gene_ontology_subset.obo
 cpanm -fn LSF-0.9.tar.gz
 
 cd $start_dir
