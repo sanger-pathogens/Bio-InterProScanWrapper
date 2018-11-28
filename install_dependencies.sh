@@ -30,6 +30,8 @@ do
 done
 
 chmod -R +x *
+# Perl LSF module checks for version. Use dummy.
+echo "echo 'LSF 9.1.3.0'" > lsid
 
 cd $build_dir
 export PATH=$dummy_bin:$PATH
