@@ -1,0 +1,20 @@
+language: perl
+addons:
+  apt:
+    packages:
+    - bedtools
+    - cd-hit
+    - ncbi-blast+
+    - mcl
+    - parallel
+    - cpanminus
+    - prank
+    - mafft
+    - fasttree
+sudo: false
+jdk:
+  - openjdk8
+  - oraclejdk8
+install:
+  - "source ./install_dependencies.sh"
+script: "dzil test"
