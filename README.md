@@ -1,7 +1,8 @@
 # Bio-InterProScanWrapper
 Wrapper around InterProScan
 
-[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-brightgreen.svg)](https://github.com/sanger-pathogens/Bio-InterProScanWrapper/blob/master/GPL-LICENSE)
+[![Build Status](https://travis-ci.org/sanger-pathogens/Bio-InterProScanWrapper.svg?branch=master)](https://travis-ci.org/sanger-pathogens/Bio-InterProScanWrapper)   
+[![License: GPL v3](https://img.shields.io/badge/License-GPL%20v3-brightgreen.svg)](https://github.com/sanger-pathogens/Bio-InterProScanWrapper/blob/master/GPL-LICENSE)   
 
 ## Contents
   * [Introduction](#introduction)
