@@ -79,7 +79,7 @@ ARG INTERPROSCAN_NAME=interproscan-${INTERPROSCAN_TAG}
 ARG INTERPROSCAN_URL=ftp://ftp.ebi.ac.uk/pub/software/unix/iprscan/5/${INTERPROSCAN_TAG}/${INTERPROSCAN_NAME}-64-bit.tar.gz
 RUN cd /usr/local \
     && echo "Downloading ${INTERPROSCAN_URL}" \
-    && wget ${INTERPROSCAN_URL} \
+    && wget ${INTERPROSCAN_URL} --progress=dot:giga \
     && echo "Unarchiving and deleting ${name}-64-bit.tar.gz" \
     && tar xzf ${INTERPROSCAN_NAME}-64-bit.tar.gz \
     && rm ${INTERPROSCAN_NAME}-64-bit.tar.gz \
