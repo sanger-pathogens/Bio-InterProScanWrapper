@@ -1,3 +1,9 @@
+cache:
+  directories:
+    - perl_modules
+before_install:
+  - cpanm local::lib
+  - eval "$(perl -Mlocal::lib=${PWD}/perl_modules)"
 language: perl
 addons:
   apt:
@@ -11,7 +17,7 @@ addons:
     - prank
     - mafft
     - fasttree
-sudo: true
+sudo: false
 jdk:
   - openjdk8
   - oraclejdk8
