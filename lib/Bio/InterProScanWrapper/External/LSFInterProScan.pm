@@ -30,7 +30,7 @@ has 'output_file'         => ( is => 'ro', isa => 'Str',      required => 1 );
 has 'memory_in_mb'        => ( is => 'ro', isa => 'Int',      default  => 8000 );
 has 'queue'               => ( is => 'ro', isa => 'Str',      default  => 'normal' );
 has '_job_manager'        => ( is => 'ro', isa => 'LSF::JobManager', lazy     => 1, builder => '_build__job_manager' );
-has 'exec'                => ( is => 'ro', isa => 'Str', default  => '/software/pathogen/external/apps/usr/local/interproscan-5.31-70.0/interproscan.sh' );
+has 'exec'                => ( is => 'ro', isa => 'Str', default  => '/usr/local/interproscan/interproscan.sh' );
 has 'output_type'         => ( is => 'ro', isa => 'Str', default => 'gff3' );
 has '_output_suffix'      => ( is => 'ro', isa => 'Str', default  => '.out' );
 has 'tokens_per_job'      => ( is => 'ro', isa => 'Int', default  => 25 );

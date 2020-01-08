@@ -5,8 +5,6 @@ use warnings;
 use Moose;
 use Cwd;
 
-BEGIN { unshift( @INC, './lib' ) }
-BEGIN { unshift( @INC, './t/lib' ) }
 with 'TestHelper';
 
 BEGIN {

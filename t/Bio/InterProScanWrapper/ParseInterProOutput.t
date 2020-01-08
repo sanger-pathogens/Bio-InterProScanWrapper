@@ -3,8 +3,6 @@ use strict;
 use warnings;
 use Test::Files qw(compare_ok);
 
-BEGIN { unshift( @INC, './lib' ) }
-
 BEGIN {
     use Test::Most;
     use_ok('Bio::InterProScanWrapper::ParseInterProOutput');

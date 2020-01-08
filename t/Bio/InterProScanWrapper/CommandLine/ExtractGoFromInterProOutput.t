@@ -7,8 +7,6 @@ use Data::Dumper;
 use Cwd;
 use File::Copy;
 
-BEGIN { unshift( @INC, './lib' ) }
-BEGIN { unshift( @INC, './t/lib' ) }
 with 'TestHelper';
 
 BEGIN {
@@ -28,7 +26,7 @@ my %scripts_and_expected_files = (
         [ ['input_annotation.gff.iprscan.gff.go.tsv', 'input_annotation.gff.iprscan.gff.go.summary.tsv', 'input_annotation.gff.go.gff'],['t/data/expected.go.tsv', 't/data/expected.go.summary.tsv', 't/data/expected.go.gff'] ],
 );
 
-mock_execute_script_and_check_output( $script_name, \%scripts_and_expected_files );
+mock_execute_script_and_check_sorted_output( $script_name, \%scripts_and_expected_files );
 
 unlink($cwd . '/input_annotation.gff.iprscan.gff');
 unlink($cwd . '/input_annotation.gff');
