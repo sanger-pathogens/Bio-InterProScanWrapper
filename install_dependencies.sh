@@ -6,9 +6,9 @@ set -e
 start_dir=$(pwd)
 
 # Install perl dependencies
-cpanm Dist::Zilla
-dzil authordeps --missing | cpanm
-cpanm Bio::Roary::ExtractProteomeFromGFF GO::Parser
+cpanm --notest Dist::Zilla
+dzil authordeps --missing | cpanm --notest
+cpanm --notest Bio::Roary::ExtractProteomeFromGFF GO::Parser
 
 # Install LSF perl module
 mkdir build
