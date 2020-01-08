@@ -17,6 +17,7 @@ addons:
     - prank
     - mafft
     - fasttree
+    - build-essential
 sudo: false
 jdk:
   - openjdk8
