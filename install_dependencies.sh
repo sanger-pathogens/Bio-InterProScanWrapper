@@ -24,7 +24,7 @@ cd build
 build_dir=$(pwd)
 
 #Create dummy bin with executables for LSF
-$(dirname $0)/dummy-lsf.sh "${build_dir}/bin"
+${start_dir}/dummy-lsf.sh "${build_dir}/bin"
 
 export PATH=${build_dir}/bin:$PATH
 export PATH=$start_dir/bin:$PATH
