@@ -5,9 +5,8 @@ use warnings;
 use Moose;
 use Test::Files qw(compare_ok);
 use Cwd;
+use File::Sort qw(sort_file);
 
-BEGIN { unshift( @INC, './lib' ) }
-BEGIN { unshift( @INC, './t/lib' ) }
 with 'TestHelper';
 
 BEGIN {
@@ -28,21 +27,25 @@ ok( my $obj = Bio::InterProScanWrapper::ExtractGoFromInterProOutput->new(
 ), 'initialise object');
 ok( $obj->run, 'Produce GO term list/summary' );
 
+sort_file('iprscan_results.gff.go.tsv', 'iprscan_results.gff.go.sorted.tsv');
 compare_ok(
     't/data/expected.go.tsv', 
-    'iprscan_results.gff.go.tsv', 
+    'iprscan_results.gff.go.sorted.tsv', 
     'GO terms per gene list as expected'
 );
 
+sort_file('iprscan_results.gff.go.summary.tsv', 'iprscan_results.gff.go.summary.sorted.tsv');
 compare_ok(
     't/data/expected.go.summary.tsv',
-    'iprscan_results.gff.go.summary.tsv',
+    'iprscan_results.gff.go.summary.sorted.tsv',
     'GO term summary as expected'
 );
 
 unlink('input_annotation.gff.proteome.faa');
 unlink('iprscan_results.gff.go.tsv');
 unlink('iprscan_results.gff.go.summary.tsv');
+unlink('iprscan_results.gff.go.sorted.tsv');
+unlink('iprscan_results.gff.go.summary.sorted.tsv');
 
 ok( my $gff_obj = Bio::InterProScanWrapper::ExtractGoFromInterProOutput->new(
     iprscan_file  => 'input_annotation.gff.iprscan.gff',
@@ -52,15 +55,17 @@ ok( my $gff_obj = Bio::InterProScanWrapper::ExtractGoFromInterProOutput->new(
 ), 'initialise object with gff file');
 ok( $gff_obj->run, 'Produce GO term list/summary' );
 
+sort_file('iprscan_results.gff.go.tsv', 'iprscan_results.gff.go.sorted.tsv');
 compare_ok(
     't/data/expected.go.tsv',
-    'iprscan_results.gff.go.tsv',
+    'iprscan_results.gff.go.sorted.tsv',
     'GO terms per gene list as expected'
 );
 
+sort_file('iprscan_results.gff.go.summary.tsv', 'iprscan_results.gff.go.summary.sorted.tsv');
 compare_ok(
     't/data/expected.go.summary.tsv',
-    'iprscan_results.gff.go.summary.tsv',
+    'iprscan_results.gff.go.summary.sorted.tsv',
     'GO term summary as expected'
 );
 
@@ -76,5 +81,8 @@ unlink('input_annotation.gff.proteome.faa');
 unlink('iprscan_results.gff.go.tsv');
 unlink('iprscan_results.gff.go.summary.tsv');
 unlink('input_annotation.gff.go.gff');
+unlink('iprscan_results.gff.go.sorted.tsv');
+unlink('iprscan_results.gff.go.summary.sorted.tsv');
+
 
 done_testing();

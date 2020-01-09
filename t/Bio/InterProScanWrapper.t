@@ -7,8 +7,6 @@ use Cwd;
 use Test::Files qw(compare_ok);
 use File::Copy;
 
-BEGIN { unshift( @INC, './lib' ) }
-BEGIN { unshift( @INC, './t/lib' ) }
 with 'TestHelper';
 
 BEGIN {

@@ -8,8 +8,6 @@ use File::Temp;
 use Cwd;
 use Moose;
 
-BEGIN { unshift( @INC, './lib' ) }
-BEGIN { unshift( @INC, './t/lib' ) }
 with 'TestHelper';
 
 BEGIN {
