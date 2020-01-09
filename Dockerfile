@@ -35,27 +35,14 @@ ENV   LANG     en_GB.UTF-8
 ENV   LANGUAGE en_GB:en
 ENV   LC_ALL   en_GB.UTF-8
 
-# LSF perl package (cpanm cannot find it)
+# Install probelm packages manually (circular dependency + LSF dependencies)
 COPY ./dummy-lsf.sh /tmp
-RUN /tmp/dummy-lsf.sh /tmp/binny
-ARG REAL_PATH=$PATH
-ENV PATH=/tmp/binny:$PATH
-RUN cd /tmp \
-    && wget https://cpan.metacpan.org/authors/id/M/MS/MSOUTHERN/LSF-0.9.tar.gz \
-    && cpanm --notest -fn LSF-0.9.tar.gz
-
-# Bio-ASN1-EntrezGene perl package (to break circular dependency)
-ARG ENTREZ_GENE_TAG=1.73
-ARG ENTREZ_GENE_NAME="Bio-ASN1-EntrezGene-${ENTREZ_GENE_TAG}"
-ARG ENTREZ_GENE_URL="http://www.cpan.org/authors/id/C/CJ/CJFIELDS/${ENTREZ_GENE_NAME}.tar.gz"
-RUN cd /tmp \
-    && wget -O - -o /dev/null "${ENTREZ_GENE_URL}" | tar xzf - \
-    && cd "${ENTREZ_GENE_NAME}" \
-    && perl Makefile.PL \
-    && make install \
-    && cd /tmp \
-    && rm -rf "${ENTREZ_GENE_NAME}"*
-
+RUN /tmp/dummy-lsf.sh /opt/dummy-lsf
+ENV PATH=/opt/dummy-lsf:$PATH
+COPY ./install_perl_lsf.sh /tmp
+RUN /tmp/install_perl_lsf.sh
+COPY ./install_entrez.sh /tmp
+RUN /tmp/install_entrez.sh
 
 ARG BUILD_DIR=/tmp/BUILD_DIR
 ENV PATH=$PATH:${BUILD_DIR}/bin
@@ -64,14 +51,12 @@ ARG GO_OBO=${BUILD_DIR}/t/data/gene_ontology_subset.obo
 COPY . ${BUILD_DIR}
 RUN cd ${BUILD_DIR} \
     && cpanm --notest Dist::Zilla \
-    && dzil authordeps --missing | cpanm --notest \
-    && dzil listdeps --missing | cpanm --notest \
+    && dzil authordeps --missing | grep -v LSF | cpanm --notest \
+    && dzil listdeps --missing | grep -v LSF | cpanm --notest \
     && dzil install \
     && rm -rf /root/.cpanm \
     && cd /tmp \
     && rm -rf ${BUILD_DIR}
-
-ENV PATH=$REAL_PATH
 
 # Interproscan
 ARG INTERPROSCAN_TAG=5.39-77.0

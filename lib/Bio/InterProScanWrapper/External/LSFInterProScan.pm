@@ -45,7 +45,7 @@ sub _build__job_manager {
 
 sub _generate_memory_parameter {
     my ($self) = @_;
-    return "select[mem > ".$self->memory_in_mb."] rusage[mem=".$self->memory_in_mb.", iprscantok=".$self->tokens_per_job."] span[hosts=1]";
+    return "select[mem > " . $self->memory_in_mb . "] rusage[mem=" . $self->memory_in_mb . "] span[hosts=1]";
 }
 
 sub _submit_job {

@@ -18,7 +18,7 @@ has 'args'                      => ( is => 'ro', isa => 'ArrayRef', required => 
 has 'script_name'               => ( is => 'ro', isa => 'Str',      required => 1 );
 has 'help'                      => ( is => 'rw', isa => 'Bool',     default  => 0 );
 has 'cpus'                      => ( is => 'rw', isa => 'Int',      default  => 100 );
-has 'exec_script'               => ( is => 'rw', isa => 'Str',      default  => '/usr/local/interproscan/interproscan.sh' );
+has 'exec_script'               => ( is => 'rw', isa => 'Str',      lazy => 1, builder => '_build_exec_script');
 has 'input_file'                => ( is => 'rw', isa => 'Str' );
 has 'translation_table'         => ( is => 'rw', isa => 'Int',      default => 1 );
 has 'input_is_gff'              => ( is => 'rw', isa => 'Bool',     default => 0 );
@@ -58,6 +58,20 @@ sub BUILD {
     $self->no_lsf(1)                         if ( defined($no_lsf) );
     $self->intermediate_output_dir($intermediate_output_dir)  if ( defined($intermediate_output_dir) );
 
+}
+
+sub _build_exec_script
+{
+  my ($self) = @_;
+
+  if(defined $ENV{'INTERPROSCAN_EXEC'})
+  {
+    $self->exec_script($ENV{'INTERPROSCAN_EXEC'});
+  }
+  else
+  {
+    $self->exec_script("/usr/local/interproscan/interproscan.sh");
+  }
 }
 
 sub _build_output_filename
