@@ -56,7 +56,7 @@ export GO_OBO=/path/to/go-basic.obo
 ```
 
 ### Running the container
-The ```data`` directory should be mounted as ```/interproscan/data```.  The directory containing ```interproscan.properties``` should be mounted as ```/interproscan/config```.  
+The ```data``` directory should be mounted as ```/interproscan/data```.  The directory containing ```interproscan.properties``` should be mounted as ```/interproscan/config```.  
 To run interproscan in docker:  
 ```
 docker run -v /path/to/config:/interproscan/config -v /path/to/data:/interproscan/data -v <other volume like current dir> -it sangerpathogens/interproscan:<version desired> interproscan.sh
