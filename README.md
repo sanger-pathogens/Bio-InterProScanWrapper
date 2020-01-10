@@ -32,10 +32,10 @@ This is a wrapper around InterProScan. It takes in a FASTA file of proteins, spl
 ## Installation
 Bio-InterProScanWrapper has many dependencies, including [IPRscan 5](https://www.ebi.ac.uk/interpro/about/interproscan/).    Please look at the Dockerfile if you wish to install it from scratch.
 
-A docker image of Bio-InterProScanWrapper is provided and this shoud be the preferred way to run it.
+A docker image of Bio-InterProScanWrapper is provided on docker as ```sangerpathogens/interproscan``` and this shoud be the preferred way to run it.
 
 ## Running
-As the objective of this wrapper is to run interproscan on compute clusters, the ```data``` directory and the ```interproscan.properties``` of the interproscan distribution are not provided with the image.  Instead these are soft linked.
+As the objective of this wrapper is to run interproscan on compute clusters, therefore, the ```data``` directory and the ```interproscan.properties``` of the interproscan distribution are not provided with the image.  Instead these are soft linked.
 
 ### Downloading the interproscan data
 Use ```download_db.sh``` to download the data.
