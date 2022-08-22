@@ -1,4 +1,4 @@
-FROM  ubuntu:14.04
+FROM  ubuntu:20.04
 
 ARG   DEBIAN_FRONTEND=noninteractive
 
@@ -59,7 +59,7 @@ RUN cd ${BUILD_DIR} \
     && rm -rf ${BUILD_DIR}
 
 # Interproscan
-ARG INTERPROSCAN_TAG=5.39-77.0
+ARG INTERPROSCAN_TAG=5.57-90.0
 ARG INTERPROSCAN_NAME=interproscan-${INTERPROSCAN_TAG}
 ARG INTERPROSCAN_URL=ftp://ftp.ebi.ac.uk/pub/software/unix/iprscan/5/${INTERPROSCAN_TAG}/${INTERPROSCAN_NAME}-64-bit.tar.gz
 RUN cd /usr/local \
