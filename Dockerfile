@@ -24,6 +24,8 @@ RUN   apt-get update -y -qq \
         build-essential \
         libssl-dev \
         libexpat1-dev \
+        libpcre3 \
+        libpcre3-dev \
         python3 \
         python3-pip \
         libdw1 \
@@ -76,4 +78,3 @@ RUN cd /usr/local \
     && cd .. \
     && mv ${INTERPROSCAN_NAME} interproscan
 ENV PATH=$PATH:/usr/local/interproscan
-
