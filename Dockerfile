@@ -1,4 +1,4 @@
-FROM  ubuntu:14.04
+FROM  ubuntu:20.04
 
 ARG   DEBIAN_FRONTEND=noninteractive
 
@@ -24,6 +24,8 @@ RUN   apt-get update -y -qq \
         build-essential \
         libssl-dev \
         libexpat1-dev \
+        libpcre3 \
+        libpcre3-dev \
         python3 \
         python3-pip \
         libdw1 \
@@ -59,7 +61,7 @@ RUN cd ${BUILD_DIR} \
     && rm -rf ${BUILD_DIR}
 
 # Interproscan
-ARG INTERPROSCAN_TAG=5.39-77.0
+ARG INTERPROSCAN_TAG=5.57-90.0
 ARG INTERPROSCAN_NAME=interproscan-${INTERPROSCAN_TAG}
 ARG INTERPROSCAN_URL=ftp://ftp.ebi.ac.uk/pub/software/unix/iprscan/5/${INTERPROSCAN_TAG}/${INTERPROSCAN_NAME}-64-bit.tar.gz
 RUN cd /usr/local \
@@ -76,4 +78,3 @@ RUN cd /usr/local \
     && cd .. \
     && mv ${INTERPROSCAN_NAME} interproscan
 ENV PATH=$PATH:/usr/local/interproscan
-
